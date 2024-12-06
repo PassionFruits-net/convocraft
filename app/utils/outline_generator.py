@@ -1,11 +1,16 @@
 from pydantic import BaseModel, Field
 from utils.openai_utils import get_openai_client
+from enum import Enum
 
-
+class Gender(str, Enum):
+    male = "male"
+    female = "female"
+    
 class Speaker(BaseModel):
     name: str = Field(..., description="The name of the speaker.")
     role: str = Field(..., description="The role of the speaker in the conversation.")
-
+    gender: Gender = Field(..., description="The gender of the speaker (male or female).")
+    
 class Section(BaseModel):
     focus: str = Field(..., description="The main point of this section.")
     discussion_points: list[str] = Field(
@@ -17,7 +22,8 @@ class ConversationOutline(BaseModel):
     context: str = Field(
         ...,
         description="""A brief introduction to the topic and its importance. 
-        Should include character names and a one-liner about their background."""
+        Should include character names and a one-liner about their background.
+        Make sure that one character name is male and one is female."""
     )
     sections: list[Section] = Field(
         ...,
@@ -25,7 +31,7 @@ class ConversationOutline(BaseModel):
     )
     speakers: list[Speaker] = Field(
         ...,
-        description="A list of speakers involved in the conversation, each with a name and role."
+        description="""A list of speakers involved in the conversation, each with a name, gender and role."""
     )
     
 def generate_outline(topic, length, model="gpt-4o-2024-08-06"):
@@ -64,8 +70,8 @@ def generate_fake_outline(topic, length):
             )
         ],
         speakers=[
-            Speaker(name="Speaker 1", role="Expert"),
-            Speaker(name="Speaker 2", role="Moderator")
+            Speaker(name="Speaker 1", role="Expert", gender="male"),
+            Speaker(name="Speaker 2", role="Moderator", gender="female")
         ]
         )
     return outline

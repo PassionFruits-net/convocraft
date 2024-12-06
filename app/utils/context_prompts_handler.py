@@ -8,7 +8,6 @@ def get_section_contents(outline):
     return section_contents
 
 def create_context_and_prompts(outline):
-    context = f"""{outline.context}. The speakers are {' and '.join([speaker.name for speaker in outline.speakers])}.
-    {outline.speakers[0].name} is a {outline.speakers[0].role} and {outline.speakers[1].name} is a {outline.speakers[1].role}."""
+    context = outline.context
     prompts = get_section_contents(outline)
     return context, prompts

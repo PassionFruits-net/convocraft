@@ -1,9 +1,10 @@
 import re
 from utils.openai_utils import get_openai_client
+from utils.outline_generator import Speaker, Gender
 from pydantic import BaseModel
 
 class Utterance(BaseModel):
-    speaker: str
+    speaker: Speaker
     text: str
 
 class Conversation(BaseModel):
@@ -35,6 +36,8 @@ def fetch_conversation_responses(context, prompts, model="gpt-4o-2024-08-06"):
     return conversartion_pieces
 
 def fetch_fake_conversation_responses(context, prompts):
-    utterances = [Utterance(speaker=f"Speaker {n}", text=f"Response {n}") for n in range(10)]
+    utterances = []
+    utterances.append(Utterance(speaker=Speaker(name="Speaker1", role="Teacher1", gender=Gender("female")), text=f"Response 1"))
+    utterances.append(Utterance(speaker=Speaker(name="Speaker2", role="Teacher2", gender=Gender("male")), text=f"Response 2"))
     conversation_pieces = [Conversation(utterances=utterances) for _ in prompts]
     return conversation_pieces

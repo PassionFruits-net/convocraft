@@ -1,6 +1,7 @@
 import os
 import emoji
 import streamlit as st
+from utils.openai_utils import get_openai_client
 from utils.outline_generator import generate_outline, generate_fake_outline
 from utils.context_prompts_handler import create_context_and_prompts
 from utils.llm_calls import fetch_conversation_responses, fetch_fake_conversation_responses, format_conversation
@@ -36,8 +37,26 @@ st.write("🎧 Preview and choose audio voices. 🛠️")
 st.write("🌐 Seamlessly upload documents for context. 🛠️")
 st.write("---")
 
+# Sidebar
 st.sidebar.image("app/184004124.jpeg", use_container_width=True)
 st.sidebar.header("⚙️ Settings")
+
+# Input field for OPENAI_API_KEY
+if "OPENAI_API_KEY" not in st.session_state:
+    st.session_state["OPENAI_API_KEY"] = ""
+
+st.sidebar.text_input(
+    "🔑 OpenAI API Key",
+    value=st.session_state["OPENAI_API_KEY"],
+    type="password",
+    key="OPENAI_API_KEY"
+)
+
+try:
+    openai_client = get_openai_client()
+except ValueError as e:
+    st.error(str(e))
+    
 topic = st.sidebar.text_input("🗣️ Conversation Topic", "Shipwrecks of Europe")
 length = st.sidebar.number_input("⏳ Conversation Length (minutes)", min_value=10, max_value=600, value=10)
 
