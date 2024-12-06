@@ -73,7 +73,7 @@ def generate_audio(conversation, voice_mapping, output_file="conversation.mp3", 
         st.audio(temp_file.name, format="audio/mp3")
         return temp_file.name
     else:
-        for utterance in conversation.utterances[:5]:
+        for utterance in conversation.utterances:
             speaker = utterance.speaker.name
             text = utterance.text
             if speaker not in voice_mapping:
