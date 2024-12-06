@@ -33,7 +33,7 @@ st.write("")
 st.write("🎯 **Features:**")
 st.write("📝 Generate conversation outline. ✅")
 st.write("🔍 Edit and refine context and prompts. 🔜")
-st.write("🎧 Preview and choose audio voices. 🛠️")
+st.write("🎧 Preview and choose audio voices. ✅")
 st.write("🌐 Seamlessly upload documents for context. 🛠️")
 st.write("---")
 
