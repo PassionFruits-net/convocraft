@@ -1,6 +1,15 @@
 import os
-import emoji
+import yaml
 import streamlit as st
+from yaml.loader import SafeLoader
+import streamlit_authenticator as stauth
+from streamlit_authenticator.utilities import (CredentialsError,
+                                               ForgotError,
+                                               Hasher,
+                                               LoginError,
+                                               RegisterError,
+                                               ResetError,
+                                               UpdateError)
 from utils.openai_utils import get_openai_client
 from utils.outline_generator import generate_outline, generate_fake_outline
 from utils.context_prompts_handler import create_context_and_prompts
@@ -24,6 +33,24 @@ custom_css = """
 """
 
 st.markdown(custom_css, unsafe_allow_html=True)
+
+# Loading config file
+with open('config.yaml', 'r', encoding='utf-8') as file:
+    config = yaml.load(file, Loader=SafeLoader)
+
+# Creating the authenticator object
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days'],
+    auto_hash=True
+)
+
+# authenticator = stauth.Authenticate(
+#     '../config.yaml'
+# )
+
 st.markdown('<h1 class="main-title">ConvoCraft</h1>', unsafe_allow_html=True)
 st.markdown('<p class="sub-title">💬 AI-Powered Conversation Generator 🤖</p>', unsafe_allow_html=True)
 
@@ -39,23 +66,23 @@ st.write("---")
 
 # Sidebar
 st.sidebar.image("app/184004124.jpeg", use_container_width=True)
-st.sidebar.header("⚙️ Settings")
 
-# Input field for OPENAI_API_KEY
-if "OPENAI_API_KEY" not in st.session_state:
-    st.session_state["OPENAI_API_KEY"] = ""
-
-st.sidebar.text_input(
-    "🔑 OpenAI API Key",
-    value=st.session_state["OPENAI_API_KEY"],
-    type="password",
-    key="OPENAI_API_KEY"
-)
-
+# Creating a login widget
 try:
-    openai_client = get_openai_client()
-except ValueError as e:
-    st.error(str(e))
+    authenticator.login("sidebar")
+except LoginError as e:
+    st.error(e)
+
+if st.session_state["authentication_status"]:
+    authenticator.logout(location="sidebar")
+    st.write(f'Welcome *{st.session_state["name"]}*')
+elif st.session_state["authentication_status"] is False:
+    st.error('Username/password is incorrect')
+
+# Pre-hashing all plain text passwords once
+# stauth.Hasher.hash_passwords(config['credentials'])  
+    
+st.sidebar.header("⚙️ Settings")
     
 topic = st.sidebar.text_input("🗣️ Conversation Topic", "Shipwrecks of Europe")
 length = st.sidebar.number_input("⏳ Conversation Length (minutes)", min_value=10, max_value=600, value=10)
@@ -161,3 +188,7 @@ if "conversation" in st.session_state:
                     file_name="conversation.mp3",
                     mime="audio/mp3"
                 )
+                
+# # Saving config file
+# with open('config.yaml', 'w', encoding='utf-8') as file:
+#     yaml.dump(config, file, default_flow_style=False)                
