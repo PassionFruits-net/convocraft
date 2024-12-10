@@ -79,6 +79,7 @@ if st.session_state["authentication_status"]:
     st.write(f'Welcome *{st.session_state["name"]}*')
     load_dotenv()
     st.session_state["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+    st.write(f'DEBUG - {st.session_state["OPENAI_API_KEY"]}')
 elif st.session_state["authentication_status"] is False:
     st.error('Username/password is incorrect')
 
