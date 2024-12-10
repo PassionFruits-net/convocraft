@@ -1,0 +1,75 @@
+cookie:
+  expiry_days: 30
+  key: some_signature_key
+  name: some_cookie_name
+credentials:
+  usernames:
+    egil:
+      email: egil@passionfruits.net
+      failed_login_attempts: 0
+      first_name: Egil
+      last_name: Moller
+      logged_in: false
+      password: $2b$12$lcL7y154VHtzGh8stfdOfud4mn8bk5QTGOL.ART8AFy8A2YX/CLEu
+      roles:
+      - admin
+      - editor
+      - viewer
+    espen:
+      email: espen@passionfruits.net
+      failed_login_attempts: 0
+      first_name: Espen
+      last_name: null
+      logged_in: false
+      password: $2b$12$oxrt0zUGQctOyY2Td7WD3O445/uRW4VBk7LW/Dv8H.2NciwKKdj.W
+      roles:
+      - admin
+      - editor
+      - viewer
+    geir:
+      email: geir@passionfruits.net
+      failed_login_attempts: 0
+      first_name: Geir
+      last_name: Isene
+      logged_in: false
+      password: $2b$12$JnJuXO.d3DuzWtCVIjnvQeza0tIAPj5ZJskBE9TcpMbRzDGDFg97a
+      roles:
+      - admin
+      - editor
+      - viewer
+    nicklas:
+      email: nicklas@passionfruits.net
+      failed_login_attempts: 0
+      first_name: Nicklas
+      last_name: Isene
+      logged_in: false
+      password: $2b$12$O8fOoUUVC0CDYiPwhoUrn.MPbt1QI4fkCuETIexdAyRmXlVsYDtTm
+      roles:
+      - admin
+      - editor
+      - viewer
+    saghar:
+      email: saghar@passionfruits.net
+      failed_login_attempts: 0
+      first_name: Saghar
+      last_name: Asadi
+      logged_in: true
+      password: $2b$12$WFlXtgKVI28MaRcN7AiPBu2CzgyM8Fr3sQdQGDGyLgbk/VyyR401C
+      roles:
+      - admin
+      - editor
+      - viewer
+    siv:
+      email: siv@passionfruits.net
+      failed_login_attempts: 0
+      first_name: Siv
+      last_name: Bayegan
+      logged_in: false
+      password: $2b$12$o5m.G7g8H0JMQmYAOBpIfu1UFpjbd6wJP/ObwACQCj8w99ebwxly.
+      roles:
+      - admin
+      - editor
+      - viewer
+pre-authorized:
+  emails:
+  - saghar@passionfruits.net
