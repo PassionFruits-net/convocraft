@@ -1,5 +1,6 @@
 import os
 import yaml
+from dotenv import load_dotenv
 import streamlit as st
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
@@ -76,6 +77,8 @@ except LoginError as e:
 if st.session_state["authentication_status"]:
     authenticator.logout(location="sidebar")
     st.write(f'Welcome *{st.session_state["name"]}*')
+    load_dotenv()
+    st.session_state["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 elif st.session_state["authentication_status"] is False:
     st.error('Username/password is incorrect')
 
