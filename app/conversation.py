@@ -33,10 +33,7 @@ def render_conversation_section():
 
     if st.button("Generate Conversation"):
         with st.spinner("Generating conversation..."):
-            if os.environ["DEBUG_MODE"] == "True":
-                conversation_pieces = fetch_fake_conversation_responses(st.session_state["context"], st.session_state["prompts"])
-            else:
-                conversation_pieces = fetch_conversation_responses(st.session_state["context"], st.session_state["prompts"])
+            conversation_pieces = fetch_conversation_responses(st.session_state["context"], st.session_state["prompts"])
             st.session_state["conversation"] = merge_conversation(conversation_pieces)
 
     if "conversation" in st.session_state:
