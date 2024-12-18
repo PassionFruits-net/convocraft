@@ -1,5 +1,3 @@
-import streamlit as st
-
 def get_section_contents(outline):
     section_contents = []
     for section in outline.sections:

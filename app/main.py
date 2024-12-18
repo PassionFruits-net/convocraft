@@ -2,9 +2,6 @@ import streamlit as st
 from auth import handle_authentication
 from settings import render_sidebar_settings
 from outline import render_outline_section
-from conversation import render_conversation_section
-from audio import render_audio_section
-from json_handling import render_json_handling
 
 # Custom CSS for styling
 st.markdown("""
@@ -22,11 +19,10 @@ st.markdown('<p class="sub-title">💬 AI-Powered Conversation Generator 🤖</p
 authenticated = handle_authentication()
 
 if authenticated:
-    # Render settings
-    topic, length = render_sidebar_settings()
+    render_outline_section()
 
-    # Render sections
-    render_outline_section(topic, length)
-    render_conversation_section()
-    render_audio_section()
-    render_json_handling()
+# if authenticated:
+#     # Render sections
+#     render_outline_section()
+#     # render_conversation_section()
+#     # render_audio_section()

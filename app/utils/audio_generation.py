@@ -3,8 +3,7 @@ import tts_wrapper
 import streamlit as st
 from pydub import AudioSegment
 from itertools import product
-from utils.llm_calls import Conversation
-from utils.outline_generator import Gender
+from utils.data_models import Gender, Conversation
 
 
 def merge_conversation(conversation_pieces: list) -> Conversation:

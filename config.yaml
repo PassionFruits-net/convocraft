@@ -38,9 +38,9 @@ credentials:
       - editor
       - viewer
     nicklas:
-      email: nicklas@passionfruits.net
+      email: niklas@passionfruits.net
       failed_login_attempts: 0
-      first_name: Nicklas
+      first_name: Niklas
       last_name: Isene
       logged_in: false
       password: $2b$12$O8fOoUUVC0CDYiPwhoUrn.MPbt1QI4fkCuETIexdAyRmXlVsYDtTm
