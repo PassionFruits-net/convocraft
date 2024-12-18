@@ -12,12 +12,17 @@ from utils.outline_generator import (
 
 def render_outline_upload_section():
     uploaded_outline_file = st.file_uploader("Upload Outline JSON", type="json", key="upload_outline")
-    if uploaded_outline_file:
+    current = None
+    if "current_uploaded_file" in st.session_state:
+        current = st.session_state["current_uploaded_file"]
+    if uploaded_outline_file != current:
+        st.session_state["current_uploaded_file"] = uploaded_outline_file        
         try:
             uploaded_outline = json.load(uploaded_outline_file)
             st.session_state["outline"] = parse_obj_as(ConversationOutline, uploaded_outline)
         except Exception as e:
             st.error(f"Failed to upload outline: {e}")
+
 
 def render_outline_download_section():
     if "outline" in st.session_state:
@@ -52,7 +57,7 @@ def update_outline_button_callback():
                 user_change_instructions
             )
             updated_outline = generate_outline(change_prompt)
-            st.session_state["updated_outline"] = updated_outline
+            st.session_state["outline"] = updated_outline
 
 def render_outline_update_section():
     st.header("🔍 Edit Outline")
@@ -67,12 +72,12 @@ def render_outline_update_section():
               key="update_outline_button", 
               on_click=update_outline_button_callback)
 
-    if "updated_outline" in st.session_state:
-        st.header("📝 Updated Outline")
-        st.session_state["outline"] = st.session_state["updated_outline"]
-        outlint_as_string = json.dumps(st.session_state["updated_outline"].model_dump(), indent=2)
-        print("UPDATED OUTLINE", outlint_as_string)
-        st.text_area("Updated Outline", value=outlint_as_string, height=300, key="display_outline_updated", disabled=True)            
+    # if "updated_outline" in st.session_state:
+    #     st.header("📝 Updated Outline")
+    #     st.session_state["outline"] = st.session_state["updated_outline"]
+    #     outlint_as_string = json.dumps(st.session_state["updated_outline"].model_dump(), indent=2)
+    #     print("UPDATED OUTLINE", outlint_as_string)
+    #     st.text_area("Updated Outline", value=outlint_as_string, height=300, key="display_outline_updated", disabled=True)            
 
 
 def render_outline_section():
@@ -81,8 +86,8 @@ def render_outline_section():
         st.text_area("🗣️ Conversation Topic", value="", key="topic", height=100)
         st.number_input("⏳ Conversation Length (minutes)", value=10, key="length")
         st.button("Generate Outline", 
-                  key="generate_outline_button", 
-                  on_click=generate_outline_button_callback)
+                key="generate_outline_button", 
+                on_click=generate_outline_button_callback)
     
     if "outline" in st.session_state:
         st.header("📝 Generated Outline")
