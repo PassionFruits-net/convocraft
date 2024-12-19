@@ -1,5 +1,5 @@
 import streamlit as st
-from utils.audio_generation import generate_audio, list_voices
+from utils.audio_generator import generate_audio, list_voices
 
 def render_audio_section():
     if "conversation" not in st.session_state:

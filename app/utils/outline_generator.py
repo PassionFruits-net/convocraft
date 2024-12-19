@@ -3,7 +3,7 @@ import tts_wrapper
 import streamlit as st
 from pydub import AudioSegment
 from itertools import product
-from utils.data_models import Conversation, Gender, ConversationOutline, Section, Speaker
+from utils.data_models import Gender, ConversationOutline, Section, Speaker
 from utils.openai_utils import get_openai_client
 
 def generate_outline_prompt(topic, length):
@@ -69,37 +69,8 @@ def generate_outline_update_prompt(original_outline, user_instructions):
     """
     return prompt
 
-# def update_outline_button_callback():
-#     st.header("🔍 Edit Outline")
-
-#     st.text_area(
-#         "Instruct the LLM to make changes to the context and prompts",
-#         placeholder="""
-#         - Change the names to Saghar (female) and Egil (male)
-#         - Change the topic to dark matter
-#         - Keep the conversation topics as in the original outline 
-#             but divide the sections such that each section contains ONLY ONE discussion topic 
-#             (i.e. divide each section in the original outline to as many subsections as there are discussion topics)
-#         """,
-#         height=200,
-#         key="user_change_instructions"
-#     )
-
-#     if st.button("Send Update Instructions to LLM"):
-#         update_outline_button_callback()
-
-#     if "outline" in st.session_state:
-#         st.write(st.session_state["outline"])
-
 
 #### FIXME! Do not belong here! ####
-def merge_conversation(conversation_pieces: list) -> Conversation:
-    full_conversation = Conversation(utterances=[])
-    for conversation in conversation_pieces:
-        full_conversation.utterances.extend(conversation.utterances)
-    return full_conversation
-
-
 def generate_voice_combinations(available_voice_mappings):
     speakers, voices = zip(*available_voice_mappings.items())
     voice_combinations = product(*voices)

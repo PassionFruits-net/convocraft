@@ -8,7 +8,7 @@ def format_conversation(conversation):
         formatted_conversation.append(f"{utterance.speaker}: [{utterance.text}, {utterance.entities}, {utterance.discussion_points}]")
     return "\n".join(formatted_conversation)
 
-def fetch_conversation_responses(context, prompts, model=None) -> list[Conversation]:
+def fetch_conversation_responses(context, prompts, model="gpt-4o-2024-08-06") -> list[Conversation]:
     """
     Fetch conversation responses from the OpenAI client.
 
@@ -28,9 +28,6 @@ def fetch_conversation_responses(context, prompts, model=None) -> list[Conversat
             {"role": "system", "content": context},
             {"role": "user", "content": prompt},
         ]
-
-        print(f"Calling LLM with context:\n{context}\n\nand prompt:\n{prompt}\n")
-
         try:
             completion = client.beta.chat.completions.parse(
                 model=model,

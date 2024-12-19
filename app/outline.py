@@ -27,7 +27,7 @@ def render_outline_upload_section():
 def render_outline_download_section():
     if "outline" in st.session_state:
         outline_json = st.session_state["outline"].model_dump_json(indent=2)
-        file_name = st.text_input("Filename for Download", "outline.json", key="file_name_input")
+        file_name = st.text_input("Filename for Download", "outline.json")
         if st.download_button(
             label="Download Outline",
             data=outline_json,
@@ -72,16 +72,9 @@ def render_outline_update_section():
               key="update_outline_button", 
               on_click=update_outline_button_callback)
 
-    # if "updated_outline" in st.session_state:
-    #     st.header("📝 Updated Outline")
-    #     st.session_state["outline"] = st.session_state["updated_outline"]
-    #     outlint_as_string = json.dumps(st.session_state["updated_outline"].model_dump(), indent=2)
-    #     print("UPDATED OUTLINE", outlint_as_string)
-    #     st.text_area("Updated Outline", value=outlint_as_string, height=300, key="display_outline_updated", disabled=True)            
-
 
 def render_outline_section():
-    with st.sidebar.expander("📝 Outline Inputs", expanded=True):
+    with st.sidebar.expander("📝 Outline Inputs", expanded=False):
         render_outline_upload_section()
         st.text_area("🗣️ Conversation Topic", value="", key="topic", height=100)
         st.number_input("⏳ Conversation Length (minutes)", value=10, key="length")

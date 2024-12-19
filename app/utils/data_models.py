@@ -23,14 +23,17 @@ class Utterance(BaseModel):
 class Conversation(BaseModel):
     utterances: list[Utterance]
 
-    
+
+class DiscussionPoint(BaseModel):
+    text: str = Field(..., description="The main point of the discussion.")
+    image_prompt: str = Field(..., description="A prompt to generate an image based on the discussion point.")
+
 class Section(BaseModel):
     focus: str = Field(..., description="The main point of this section.")
-    discussion_points: list[str] = Field(
+    discussion_points: list[DiscussionPoint] = Field(
         ..., 
         description="A list of key points to be discussed in this section."
     )
-
 
 class ConversationOutline(BaseModel):
     context: str = Field(
