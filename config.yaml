@@ -10,7 +10,7 @@ credentials:
       first_name: Egil
       last_name: Moller
       logged_in: false
-      password: $2b$12$lcL7y154VHtzGh8stfdOfud4mn8bk5QTGOL.ART8AFy8A2YX/CLEu
+      password: $2b$12$KE8gI/dTyiW9gpTbR9ab6u/JxNNHPr37.Ga1.yE5EFe6njvjZCmm2
       roles:
       - admin
       - editor
@@ -21,7 +21,7 @@ credentials:
       first_name: Espen
       last_name: null
       logged_in: false
-      password: $2b$12$oxrt0zUGQctOyY2Td7WD3O445/uRW4VBk7LW/Dv8H.2NciwKKdj.W
+      password: $2b$12$h/cZLyemGKdpQXkj05WzSOWt6VUN84hsKUXhen7yYYLcvRCkgPFcm
       roles:
       - admin
       - editor
@@ -32,7 +32,7 @@ credentials:
       first_name: Geir
       last_name: Isene
       logged_in: false
-      password: $2b$12$JnJuXO.d3DuzWtCVIjnvQeza0tIAPj5ZJskBE9TcpMbRzDGDFg97a
+      password: $2b$12$bI/i6vuj05bV45HWy0moTuqT/e6tpkwwr6NS9VFXc9DIXv9NnEOZa
       roles:
       - admin
       - editor
@@ -43,7 +43,7 @@ credentials:
       first_name: Niklas
       last_name: Isene
       logged_in: false
-      password: $2b$12$O8fOoUUVC0CDYiPwhoUrn.MPbt1QI4fkCuETIexdAyRmXlVsYDtTm
+      password: $2b$12$vPxeWkTvQGYQI9po8v7ksulFgaDeg8DC3aW77xi2RihhRmMKebDjW
       roles:
       - admin
       - editor
@@ -54,7 +54,7 @@ credentials:
       first_name: Saghar
       last_name: Asadi
       logged_in: true
-      password: $2b$12$WFlXtgKVI28MaRcN7AiPBu2CzgyM8Fr3sQdQGDGyLgbk/VyyR401C
+      password: $2b$12$sJYWKGKtTNQT1iDBgj3DtuPEv2yCI7Q.erxi3XefND0d5evS8K98O
       roles:
       - admin
       - editor
@@ -65,7 +65,7 @@ credentials:
       first_name: Siv
       last_name: Bayegan
       logged_in: false
-      password: $2b$12$o5m.G7g8H0JMQmYAOBpIfu1UFpjbd6wJP/ObwACQCj8w99ebwxly.
+      password: $2b$12$rcZUaQojz4iXVmZf5Gh/du/Y8yPkqgYKFCrdpUETwIGxaPTpc5oYW
       roles:
       - admin
       - editor
