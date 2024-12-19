@@ -22,16 +22,16 @@ def render_conversation_upload_section():
 
 def render_conversation_download_section():
     if "conversation" in st.session_state:
-        outline_json = st.session_state["conversation"].model_dump_json(indent=2)
-        file_name = st.text_input("Filename for Download", "conversation.json")
+        conversation_json = st.session_state["conversation"].model_dump_json(indent=2)
+        conversation_file_name = st.text_input("Filename for Download", "conversation.json")
         if st.download_button(
             label="Download Conversation",
-            data=outline_json,
-            file_name=file_name,
+            data=conversation_json,
+            file_name=conversation_file_name,
             mime="application/json",
             key="download_conversation_button"
         ):
-            st.success(f"Conversation saved as {file_name}")
+            st.success(f"Conversation saved as {conversation_file_name}")
             
 def generate_conversation_button_callback():
     if os.environ.get("DEBUG_MODE", "").lower() == "true":

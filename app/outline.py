@@ -27,15 +27,15 @@ def render_outline_upload_section():
 def render_outline_download_section():
     if "outline" in st.session_state:
         outline_json = st.session_state["outline"].model_dump_json(indent=2)
-        file_name = st.text_input("Filename for Download", "outline.json")
+        outline_file_name = st.text_input("Filename for Download", "outline.json")
         if st.download_button(
             label="Download Outline",
             data=outline_json,
-            file_name=file_name,
+            file_name=outline_file_name,
             mime="application/json",
             key="download_outline_button"
         ):
-            st.success(f"Outline saved as {file_name}")
+            st.success(f"Outline saved as {outline_file_name}")
 
 def generate_outline_button_callback():
     topic = st.session_state.get("topic", "")

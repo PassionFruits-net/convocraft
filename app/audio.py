@@ -42,10 +42,12 @@ def render_audio_section():
 
     if "full_audio_path" in st.session_state:
         st.audio(st.session_state["full_audio_path"], format="audio/mp3")
+        audio_file_name = st.text_input("Filename for Download", "conversation.mp3")
         with open(st.session_state["full_audio_path"], "rb") as file:
             st.download_button(
                 label="Download Full Audio",
                 data=file,
-                file_name="conversation.mp3",
+                file_name=audio_file_name,
                 mime="audio/mp3"
             )
+            st.success(f"Full audio saved as {audio_file_name}")            
