@@ -2,12 +2,6 @@ from utils.openai_utils import get_openai_client
 from utils.data_models import Speaker, Gender, Conversation, Utterance
 
 
-def format_conversation(conversation):
-    formatted_conversation = []
-    for utterance in conversation.utterances:
-        formatted_conversation.append(f"{utterance.speaker}: [{utterance.text}, {utterance.entities}, {utterance.discussion_points}]")
-    return "\n".join(formatted_conversation)
-
 def fetch_conversation_responses(context, prompts, model="gpt-4o-2024-08-06") -> list[Conversation]:
     """
     Fetch conversation responses from the OpenAI client.
