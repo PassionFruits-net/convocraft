@@ -1,23 +1,8 @@
 from utils.openai_utils import get_openai_client
-from utils.outline_generator import Speaker, Gender
-from pydantic import BaseModel, Field
+from utils.data_models import Speaker, Gender, Conversation, Utterance
 
-class Utterance(BaseModel):
-    speaker: Speaker
-    text: str
-    entities: list[str] = Field(..., description="List of entities mentioned in the text.")
-    discussion_points: str = Field(..., description="The discussion point related to the text.")
 
-class Conversation(BaseModel):
-    utterances: list[Utterance]
-
-def format_conversation(conversation):
-    formatted_conversation = []
-    for utterance in conversation.utterances:
-        formatted_conversation.append(f"{utterance.speaker}: [{utterance.text}, {utterance.entities}, {utterance.discussion_points}]")
-    return "\n".join(formatted_conversation)
-
-def fetch_conversation_responses(context, prompts, model="gpt-4o-2024-08-06"):
+def fetch_conversation_responses(context, prompts, model="gpt-4o-2024-08-06") -> list[Conversation]:
     """
     Fetch conversation responses from the OpenAI client.
 
@@ -29,24 +14,21 @@ def fetch_conversation_responses(context, prompts, model="gpt-4o-2024-08-06"):
     Returns:
         list: A list of conversation pieces (responses from the LLM).
     """
-    client = get_openai_client()  # Ensure this is defined elsewhere in your project
-    conversation_pieces = []  # Corrected typo in variable name
+    client = get_openai_client()
+    conversation_pieces = []  
 
     for prompt in prompts:
         messages = [
             {"role": "system", "content": context},
             {"role": "user", "content": prompt},
         ]
-
-        print(f"Calling LLM with context:\n{context}\n\nand prompt:\n{prompt}\n")
-
         try:
             completion = client.beta.chat.completions.parse(
                 model=model,
                 messages=messages,
                 temperature=0.7,
                 max_tokens=4096,
-                response_format=Conversation  # Ensure Conversation schema is defined
+                response_format=Conversation
             )
             response = completion.choices[0].message.parsed
             conversation_pieces.append(response)

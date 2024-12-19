@@ -10,7 +10,7 @@ credentials:
       first_name: Egil
       last_name: Moller
       logged_in: false
-      password: $2b$12$lcL7y154VHtzGh8stfdOfud4mn8bk5QTGOL.ART8AFy8A2YX/CLEu
+      password: $2b$12$qpChv0fZjes6Io/1zOSfQ..v9JvZjv3Ihoan6cM/3NlBPGjB4PEeO
       roles:
       - admin
       - editor
@@ -21,7 +21,7 @@ credentials:
       first_name: Espen
       last_name: null
       logged_in: false
-      password: $2b$12$oxrt0zUGQctOyY2Td7WD3O445/uRW4VBk7LW/Dv8H.2NciwKKdj.W
+      password: $2b$12$UUKsQ7klWFoVedZMe4ExseZ0NPtbAGXbt7NzC8YGZU57OJESZPiXy
       roles:
       - admin
       - editor
@@ -32,18 +32,18 @@ credentials:
       first_name: Geir
       last_name: Isene
       logged_in: false
-      password: $2b$12$JnJuXO.d3DuzWtCVIjnvQeza0tIAPj5ZJskBE9TcpMbRzDGDFg97a
+      password: $2b$12$1xU4mnzhEysv548lPFY9YO4J9X0WgBFzt7UEzO7jH.L8kFJJbC.di
       roles:
       - admin
       - editor
       - viewer
-    nicklas:
-      email: nicklas@passionfruits.net
+    niklas:
+      email: niklas@passionfruits.net
       failed_login_attempts: 0
-      first_name: Nicklas
+      first_name: Niklas
       last_name: Isene
       logged_in: false
-      password: $2b$12$O8fOoUUVC0CDYiPwhoUrn.MPbt1QI4fkCuETIexdAyRmXlVsYDtTm
+      password: $2b$12$bnZUZSOCnDFGYmQiKrY7vO9/lPLK.l8nZmpL4spueOcbXZQZN6//W
       roles:
       - admin
       - editor
@@ -54,7 +54,7 @@ credentials:
       first_name: Saghar
       last_name: Asadi
       logged_in: true
-      password: $2b$12$WFlXtgKVI28MaRcN7AiPBu2CzgyM8Fr3sQdQGDGyLgbk/VyyR401C
+      password: $2b$12$8EnnpmjZrSripo9g.bodweAebj2mRN8Axza.SuWA91JFGQGU.oIYu
       roles:
       - admin
       - editor
@@ -65,7 +65,7 @@ credentials:
       first_name: Siv
       last_name: Bayegan
       logged_in: false
-      password: $2b$12$o5m.G7g8H0JMQmYAOBpIfu1UFpjbd6wJP/ObwACQCj8w99ebwxly.
+      password: $2b$12$RSVZZXEuvDA1uNkNnBOueOKnhiZZZ4yUmL6FOEhlQ6N7JdvtXHbES
       roles:
       - admin
       - editor

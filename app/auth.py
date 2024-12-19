@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
 
-
 def handle_authentication():
     with open('config.yaml', 'r', encoding='utf-8') as file:
         config = yaml.load(file, Loader=SafeLoader)
@@ -27,7 +26,7 @@ def handle_authentication():
         authenticator.logout(location="sidebar")
         st.write(f"Welcome *{st.session_state['name']}*!")
         load_dotenv()
-        st.session_state["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")        
+        st.session_state["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
         return True
     elif st.session_state["authentication_status"] is False:
         st.error('Username/password is incorrect')
