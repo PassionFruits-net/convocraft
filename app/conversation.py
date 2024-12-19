@@ -48,7 +48,7 @@ def generate_conversation_button_callback():
     st.session_state["conversation"] = merge_conversation(conversation_pieces)
 
 def render_conversation_section():
-    with st.sidebar.expander("📝 Conversation Inputs", expanded=False):
+    with st.sidebar.expander("💬 Conversation Inputs", expanded=False):
         render_conversation_upload_section()
 
     if "outline" in st.session_state:
