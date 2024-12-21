@@ -72,12 +72,22 @@ def render_outline_update_section():
               key="update_outline_button", 
               on_click=update_outline_button_callback)
 
-
 def render_outline_section():
     with st.sidebar.expander("📝 Outline Inputs", expanded=False):
         render_outline_upload_section()
-        st.text_area("🗣️ Conversation Topic", value="", key="topic", height=100)
+        st.text_area(
+            "🗣️ Conversation Topic", 
+            placeholder="Describe the topic for conversation... (it can be a single word as well as an elaborate scenario)",
+            key="topic", 
+            height=100
+            )
         st.number_input("⏳ Conversation Length (minutes)", value=10, key="length")
+        st.text_area(
+            "🎨 Image Style Details", 
+            placeholder="Describe the style for image prompt generation (e.g., color, theme, etc.)",
+            key="image_prompt_details", 
+            height=100
+        )
         st.button("Generate Outline", 
                 key="generate_outline_button", 
                 on_click=generate_outline_button_callback)
