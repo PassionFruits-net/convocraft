@@ -43,7 +43,7 @@ def generate_images_in_process(prompts, stop_signal, api_key, results_dict):
 
 def render_image_generation_section():
     if "outline" not in st.session_state:
-        st.info("Please generate/upload an outline first to enable image generation.")
+        st.info("Please generate/upload an outline first to enable conversation/image generation.")
         return
 
     st.header("🎨 Image Generation")
@@ -103,6 +103,3 @@ def render_image_generation_section():
                     )
         else:
             st.warning("Please select at least one prompt.")
-
-    if st.button("Abort Image Generation"):
-        stop_signal["abort"] = True
