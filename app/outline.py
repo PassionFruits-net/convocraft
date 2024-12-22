@@ -83,7 +83,7 @@ def render_outline_section():
             )
         st.number_input("⏳ Conversation Length (minutes)", value=10, key="length")
         st.text_area(
-            "🎨 Image Style Details", 
+            "🎨 Image Style Details (Optional)", 
             placeholder="Describe the style for image prompt generation (e.g., color, theme, etc.)",
             key="image_prompt_details", 
             height=100

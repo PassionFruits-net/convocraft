@@ -19,6 +19,13 @@ def generate_outline_prompt(topic, length):
     - Make the outline such that it is possible to break it down and generate LLM prompts for each part of the conversation without losing coherence.
     
     Additionally, generate image prompt details based on the following description: '{image_prompt_details}'.
+    
+    General instructions for the image_prompts:
+    - your prompts must be descriptive of the scene, describe exact element, lighting, mood but not wordy.
+    - all prompts must follow a similar theme/style.
+    - make sure there is nothing NSFW in the prompts.
+    - all scenery must be depicting natural elements, no humans or maps etc.
+    - prompts must be specifically tailored for Dall-E
     """
     return prompt
 

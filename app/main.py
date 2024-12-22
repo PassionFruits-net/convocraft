@@ -3,6 +3,7 @@ from auth import handle_authentication
 from outline import render_outline_section
 from conversation import render_conversation_section
 from audio import render_audio_section
+from text_to_image import render_image_generation_section
 
 # Custom CSS for styling
 st.markdown("""
@@ -27,3 +28,4 @@ if authenticated:
     render_outline_section()
     render_conversation_section()
     render_audio_section()
+    render_image_generation_section()

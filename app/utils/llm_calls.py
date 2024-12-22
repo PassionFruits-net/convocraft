@@ -1,6 +1,7 @@
+import openai
+import requests
 from utils.openai_utils import get_openai_client
 from utils.data_models import Speaker, Gender, Conversation, Utterance
-
 
 def fetch_conversation_responses(context, prompts, model="gpt-4o-2024-08-06") -> list[Conversation]:
     """
@@ -53,3 +54,53 @@ def fetch_fake_conversation_responses(context, prompts):
         ]
         conversation_pieces.append(Conversation(utterances=utterances))
     return conversation_pieces
+
+def get_image_from_url(url):
+    """
+    Get an image from a URL and return the binary data.
+
+    Args:
+        url (str): The URL of the image.
+
+    Returns:
+        bytes: The binary data of the image.
+    """
+    response = requests.get(url)
+    return response.content
+
+def generate_images_with_dalle(prompts, stop_signal, api_key):
+    """
+    Generate images using OpenAI's DALL·E model.
+
+    Args:
+        prompts (list): List of text prompts for image generation.
+        stop_signal (dict): A dictionary with an "abort" key to monitor stopping.
+        api_key (str): API key for authentication.        
+
+    Returns:
+        list: A list of generated image data (binary).
+    """
+    openai.api_key = api_key
+    generated_images = []
+    client = openai.OpenAI()
+    generated_images = []
+    image_urls = []
+
+    for i, prompt in enumerate(prompts):
+        if stop_signal.get("abort"):
+            break
+        try:
+            response = client.images.generate(
+                model="dall-e-3",
+                prompt=prompt, 
+                n=1, 
+                size="1792x1024"
+                )
+            image_url = response.data[0].url
+            image_urls.append(image_url)
+            generated_images.append((prompt, get_image_from_url(image_url)))
+        except Exception as e:
+            print(f"Error generating image for prompt '{prompt}': {e}")
+            generated_images.append((prompt, None))
+
+    return generated_images, image_urls

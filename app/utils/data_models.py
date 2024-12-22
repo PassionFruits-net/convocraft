@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 from enum import Enum
 
 
@@ -26,7 +27,7 @@ class Conversation(BaseModel):
 
 class DiscussionPoint(BaseModel):
     text: str = Field(..., description="The main point of the discussion.")
-    image_prompt: str = Field(..., description="A prompt to generate an image based on the discussion point.")
+    image_prompt: Optional[str] = Field(..., description="A prompt to generate an image based on the discussion point.")
 
 class Section(BaseModel):
     focus: str = Field(..., description="The main point of this section.")
