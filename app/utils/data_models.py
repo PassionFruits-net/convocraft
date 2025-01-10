@@ -27,7 +27,7 @@ class Conversation(BaseModel):
 
 class DiscussionPoint(BaseModel):
     text: str = Field(..., description="The main point of the discussion.")
-    image_prompt: Optional[str] = Field(..., description="A prompt to generate an image based on the discussion point.")
+    image_prompts: Optional[list[str]] = Field(..., description="A list of prompts to generate images based on the discussion point.")
 
 class Section(BaseModel):
     focus: str = Field(..., description="The main point of this section.")
