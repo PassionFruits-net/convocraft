@@ -8,10 +8,9 @@ def render_document_section():
         # Initialize vector store if not exists
         if "vector_store" not in st.session_state:
             st.session_state["vector_store"] = VectorStore()
-        
-        # Handle document upload
+
         chunks = upload_and_process_document()
-        
+
         if chunks and st.button("Process Document"):
             with st.spinner("Processing document..."):
                 try:
@@ -23,6 +22,5 @@ def render_document_section():
                     import traceback
                     st.error(f"Full error: {traceback.format_exc()}")
 
-        # Show status of processed documents
         if "document_chunks" in st.session_state:
             st.write(f"Number of chunks processed: {len(st.session_state['document_chunks'])}")
