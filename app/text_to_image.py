@@ -88,11 +88,10 @@ def render_image_generation_section():
                 # Dynamically update the status placeholder
                 status_placeholder.markdown("\n".join(status_message))
                 # Wait before checking again
-                time.sleep(1)  # Use time.sleep to avoid excessive looping
+                time.sleep(1)
 
             process.join()  # Wait for the process to finish
 
-            # Display final results
             for prompt, result in results_dict.items():
                 if result["status"] == "success":
                     st.image(result["image_data"], caption=f"Prompt: {prompt}", use_container_width=True)
