@@ -8,6 +8,7 @@ from utils.openai_utils import get_openai_client
 
 def generate_outline_prompt(topic, length):
     image_prompt_details = st.session_state.get("image_prompt_details", "")
+    images_per_point = st.session_state.get("images_per_point", 5)
     prompt = dict()
     prompt["system"] = "You are a conversation planner."
     prompt["user"] = f"""
@@ -17,6 +18,7 @@ def generate_outline_prompt(topic, length):
     - It is of utmost importance to cover some parts of the topic in as much depth as possible than to cover all of it.
     - The conversation has to have a natural start and ending.
     - Make the outline such that it is possible to break it down and generate LLM prompts for each part of the conversation without losing coherence.
+    - Generate exactly {images_per_point} image prompts for each discussion point.
     
     Additionally, generate image prompt details based on the following description: '{image_prompt_details}'.
     
