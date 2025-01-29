@@ -51,3 +51,17 @@ class ConversationOutline(BaseModel):
         ...,
         description="""A list of speakers involved in the conversation, each with a name, gender and role."""
     )
+
+class DocumentChunk(BaseModel):
+    """
+    Represents a single chunk of a document.
+    """
+    text: str = Field(..., description="Chunk of text from the document.")
+    embedding: list[float] = Field(..., description="Vector embedding for this chunk.")
+
+class RetrievedContext(BaseModel):
+    """
+    Represents a retrieved document context for LLM prompting.
+    """
+    chunks: list[DocumentChunk] = Field(..., description="List of relevant document chunks.")
+    query: str = Field(..., description="The user query used for retrieval.")

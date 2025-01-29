@@ -48,8 +48,9 @@ def render_image_generation_section():
 
     st.header("🎨 Image Generation")
     discussion_points = [section.discussion_points for section in st.session_state["outline"].sections]
-    prompts = [[sdp.image_prompt for sdp in section_discussion_points] for section_discussion_points in discussion_points]
-    prompts = list(itertools.chain(*prompts))
+    prompts = [[sdp.image_prompts for sdp in section_discussion_points] for section_discussion_points in discussion_points]
+    # Flatten list of lists and remove None values
+    prompts = [p for sublist in prompts for p_list in sublist if p_list for p in p_list]
     selected_prompts = st.multiselect(
         "Select prompts to generate images for (or select all):",
         options=prompts,

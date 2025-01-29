@@ -4,6 +4,7 @@ from outline import render_outline_section
 from conversation import render_conversation_section
 from audio import render_audio_section
 from text_to_image import render_image_generation_section
+from document_section import render_document_section
 
 # Custom CSS for styling
 st.markdown("""
@@ -25,6 +26,7 @@ st.sidebar.image(logo_path, use_container_width=True)
 authenticated = handle_authentication()
 
 if authenticated:
+    render_document_section()
     render_outline_section()
     render_conversation_section()
     render_audio_section()

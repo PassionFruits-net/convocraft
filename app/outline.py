@@ -80,8 +80,15 @@ def render_outline_section():
             placeholder="Describe the topic for conversation... (it can be a single word as well as an elaborate scenario)",
             key="topic", 
             height=100
-            )
+        )
         st.number_input("⏳ Conversation Length (minutes)", value=10, key="length")
+        st.number_input(
+            "🎨 Number of Image Prompts per Discussion Point", 
+            min_value=1, 
+            max_value=10, 
+            value=5, 
+            key="images_per_point"
+        )
         st.text_area(
             "🎨 Image Style Details (Optional)", 
             placeholder="Describe the style for image prompt generation (e.g., color, theme, etc.)",
