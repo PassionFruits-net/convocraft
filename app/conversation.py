@@ -6,6 +6,7 @@ from pydantic import TypeAdapter
 from utils.context_prompts_handler import create_context_and_prompts
 from utils.llm_calls import fetch_conversation_responses, fetch_fake_conversation_responses
 from utils.conversation_generator import merge_conversation
+from utils.token_estimator import TokenEstimator
 
 def generate_conversation_button_callback():
     if os.environ.get("DEBUG_MODE", "").lower() == "true":
@@ -14,10 +15,17 @@ def generate_conversation_button_callback():
         )
         st.session_state["conversation"] = merge_conversation(conversation_pieces)
     else:
-        splits_info = st.session_state.get("conversation_splits", {
-            "total_splits": 1,
+        outline = st.session_state["outline"]
+        estimator = TokenEstimator()
+        num_splits = estimator.estimate_conversation_splits(outline.length_minutes)
+        tokens_per_split = estimator.get_tokens_per_split(outline.length_minutes, num_splits)
+        
+        splits_info = {
+            "total_splits": num_splits,
+            "tokens_per_split": tokens_per_split,
             "current_split": 0
-        })
+        }
+        st.session_state["conversation_splits"] = splits_info
 
         all_conversation_pieces = []
         progress_bar = st.progress(0)
@@ -28,7 +36,7 @@ def generate_conversation_button_callback():
             progress = (split_num + 1) / splits_info["total_splits"]
             progress_bar.progress(progress)
 
-            context, prompts = create_context_and_prompts(st.session_state["outline"])
+            context, prompts = create_context_and_prompts(outline)
             conversation_pieces = fetch_conversation_responses(context, prompts)
             all_conversation_pieces.extend(conversation_pieces)
 

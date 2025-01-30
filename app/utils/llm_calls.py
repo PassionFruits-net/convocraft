@@ -2,6 +2,8 @@ import openai
 import requests
 from utils.openai_utils import get_openai_client
 from utils.data_models import Speaker, Gender, Conversation, Utterance
+from utils.conversation_generator import create_segment_prompt, generate_segment_summary
+import streamlit as st
 
 def fetch_conversation_responses(context, prompts, model="gpt-4o-2024-08-06") -> list[Conversation]:
     """
@@ -16,26 +18,39 @@ def fetch_conversation_responses(context, prompts, model="gpt-4o-2024-08-06") ->
         list: A list of conversation pieces (responses from the LLM).
     """
     client = get_openai_client()
-    conversation_pieces = []  
+    conversation_pieces = []
+    previous_summary = None
+    segment_info = st.session_state.get("conversation_splits", {
+        "total_splits": 1,
+        "current_split": 0
+    })
 
-    for prompt in prompts:
-        messages = [
-            {"role": "system", "content": context},
-            {"role": "user", "content": prompt},
-        ]
+    for i, prompt in enumerate(prompts):
+        segment_prompt = create_segment_prompt(
+            context, 
+            prompt, 
+            segment_info,
+            previous_summary
+        )
+        
         try:
             completion = client.beta.chat.completions.parse(
                 model=model,
-                messages=messages,
+                messages=[
+                    {"role": "system", "content": segment_prompt}
+                ],
                 temperature=0.7,
                 max_tokens=4096,
                 response_format=Conversation
             )
             response = completion.choices[0].message.parsed
             conversation_pieces.append(response)
+            
+            previous_summary = generate_segment_summary(response)
+            
         except Exception as e:
-            print(f"Error during LLM call for prompt '{prompt}': {e}")
-            conversation_pieces.append({"error": str(e), "prompt": prompt})
+            st.error(f"Error during LLM call for prompt '{prompt}': {e}")
+            conversation_pieces.append(Conversation(utterances=[]))
 
     return conversation_pieces
 

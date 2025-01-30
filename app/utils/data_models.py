@@ -51,6 +51,10 @@ class ConversationOutline(BaseModel):
         ...,
         description="""A list of speakers involved in the conversation, each with a name, gender and role."""
     )
+    length_minutes: int = Field(
+        ...,
+        description="The target length of the conversation in minutes"
+    )
 
 class DocumentChunk(BaseModel):
     """

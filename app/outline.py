@@ -2,7 +2,7 @@ import json
 import os
 from utils.data_models import ConversationOutline
 import streamlit as st
-from pydantic import parse_obj_as
+from pydantic import TypeAdapter
 from utils.outline_generator import (
     generate_outline, 
     generate_fake_outline, 
@@ -19,7 +19,7 @@ def render_outline_upload_section():
         st.session_state["current_uploaded_file"] = uploaded_outline_file        
         try:
             uploaded_outline = json.load(uploaded_outline_file)
-            st.session_state["outline"] = parse_obj_as(ConversationOutline, uploaded_outline)
+            st.session_state["outline"] = TypeAdapter(ConversationOutline).validate_python(uploaded_outline)
         except Exception as e:
             st.error(f"Failed to upload outline: {e}")
 

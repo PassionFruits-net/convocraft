@@ -1,9 +1,5 @@
-import tempfile
-import tts_wrapper
 import streamlit as st
-from pydub import AudioSegment
-from itertools import product
-from utils.data_models import Gender, ConversationOutline, Section, Speaker
+from utils.data_models import ConversationOutline, Section, Speaker
 from utils.openai_utils import get_openai_client
 from utils.token_estimator import TokenEstimator
 
@@ -48,6 +44,8 @@ def generate_outline_prompt(topic, length):
 
 def generate_outline(prompt, model="gpt-4o-2024-08-06"):
     client = get_openai_client()
+    length = st.session_state.get("length", 10)
+    
     completion = client.beta.chat.completions.parse(
         model=model,
         messages=[
@@ -55,8 +53,10 @@ def generate_outline(prompt, model="gpt-4o-2024-08-06"):
             {"role": "user", "content": prompt["user"]},
         ],
         response_format=ConversationOutline
-        )
-    return completion.choices[0].message.parsed
+    )
+    outline = completion.choices[0].message.parsed
+    outline.length_minutes = length
+    return outline
 
 def generate_fake_outline(topic, length):
     outline = ConversationOutline(

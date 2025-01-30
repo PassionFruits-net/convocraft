@@ -5,7 +5,6 @@ import numpy as np
 
 def render_document_section():
     with st.sidebar.expander("📚 Document Management", expanded=False):
-        # Initialize vector store if not exists
         if "vector_store" not in st.session_state:
             st.session_state["vector_store"] = VectorStore()
 
