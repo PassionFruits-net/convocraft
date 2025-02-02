@@ -13,11 +13,13 @@ def generate_voice_combinations(available_voice_mappings):
 def list_voices(conversation):
     speakers = [utterance.speaker for utterance in conversation.utterances[:2]]
     available_voice_mappings = {}
+    if len(speakers) > 2:
+        st.warning("More than 2 speakers in the conversation. This is not supported yet.")
     for speaker in speakers:
         if speaker.gender == Gender("female"):
             available_voice_mappings[speaker.name] = ["openai:nova"]
         else:
-            available_voice_mappings[speaker.name] = ["openai:alloy", "openai:onyx"]
+            available_voice_mappings[speaker.name] = ["openai:alloy", "openai:onyx", "openai:ash", "openai:echo", "openai:fable"]
     return generate_voice_combinations(available_voice_mappings)
 
 def generate_text_audio(voice, text):

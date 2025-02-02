@@ -1,6 +1,6 @@
 import json
 import os
-from utils.data_models import ConversationOutline
+from utils.data_models import TopicOutline
 import streamlit as st
 from pydantic import TypeAdapter
 from utils.outline_generator import (
@@ -19,7 +19,7 @@ def render_outline_upload_section():
         st.session_state["current_uploaded_file"] = uploaded_outline_file        
         try:
             uploaded_outline = json.load(uploaded_outline_file)
-            st.session_state["outline"] = TypeAdapter(ConversationOutline).validate_python(uploaded_outline)
+            st.session_state["outline"] = TypeAdapter(TopicOutline).validate_python(uploaded_outline)
         except Exception as e:
             st.error(f"Failed to upload outline: {e}")
 
@@ -40,11 +40,12 @@ def render_outline_download_section():
 def generate_outline_button_callback():
     topic = st.session_state.get("topic", "")
     length = st.session_state.get("length", 10)
+    num_speakers = st.session_state.get("num_speakers", 2)
     with st.spinner("Generating outline..."):
         if os.environ.get("DEBUG_MODE", "False").lower() == "true":
-            outline = generate_fake_outline(topic, length)
+            outline = generate_fake_outline(topic, length, num_speakers)
         else:
-            outline_prompt = generate_outline_prompt(topic, length)
+            outline_prompt = generate_outline_prompt(topic, length, num_speakers)
             outline = generate_outline(outline_prompt)
         st.session_state["outline"] = outline
 
@@ -82,6 +83,13 @@ def render_outline_section():
             height=100
         )
         st.number_input("⏳ Conversation Length (minutes)", value=10, key="length")
+        st.number_input(
+            "👥 Number of Speakers",
+            min_value=1,
+            max_value=2,
+            value=2,
+            key="num_speakers"
+        )
         st.number_input(
             "🎨 Number of Image Prompts per Discussion Point", 
             min_value=1, 

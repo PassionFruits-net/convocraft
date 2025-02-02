@@ -8,7 +8,7 @@ def augment_prompt_with_retrieval(query, retrieved_chunks):
     prompt = f"Relevant Context:\n{context}\n\nUser Query:\n{query}"
     return prompt
 
-def rag_query(query, vector_store, model="gpt-4"):
+def rag_query(query, vector_store, model="gpt-4o"):
     """
     Executes a Retrieval-Augmented Generation query.
     """

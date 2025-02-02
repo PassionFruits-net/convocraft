@@ -1,11 +1,11 @@
 import tiktoken
 
 class TokenEstimator:
-    def __init__(self, model="gpt-4"):
+    def __init__(self, model="gpt-4o"):
         self.encoder = tiktoken.encoding_for_model(model)
         self.words_per_minute = 1000
         self.tokens_per_word = 1.3
-        self.max_output_tokens = 4000 if model == "gpt-4" else 2000
+        self.max_output_tokens = 4000 if model == "gpt-4o" else 2000
 
     def estimate_conversation_splits(self, total_minutes):
         """

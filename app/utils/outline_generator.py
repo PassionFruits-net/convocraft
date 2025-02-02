@@ -1,11 +1,12 @@
 import streamlit as st
-from utils.data_models import ConversationOutline, Section, Speaker
+from utils.data_models import TopicOutline, Section, Speaker
 from utils.openai_utils import get_openai_client
 from utils.token_estimator import TokenEstimator
 
-def generate_outline_prompt(topic, length):
+def generate_outline_prompt(topic, length, num_speakers):
     image_prompt_details = st.session_state.get("image_prompt_details", "")
     images_per_point = st.session_state.get("images_per_point", 5)
+    num_speakers = st.session_state.get("num_speakers", 2)
 
     estimator = TokenEstimator()
     num_splits = estimator.estimate_conversation_splits(length)
@@ -14,7 +15,8 @@ def generate_outline_prompt(topic, length):
     st.session_state["conversation_splits"] = {
         "total_splits": num_splits,
         "tokens_per_split": tokens_per_split,
-        "current_split": 0
+        "current_split": 0,
+        "num_speakers": num_speakers
     }
 
     prompt = dict()
@@ -22,6 +24,7 @@ def generate_outline_prompt(topic, length):
     prompt["user"] = f"""
     This is part 1 of {num_splits} for a {length}-minute conversation.
     Target token count for this part: {tokens_per_split}
+    Number of speakers: {num_speakers}
 
     Topic: {topic}
 
@@ -30,6 +33,8 @@ def generate_outline_prompt(topic, length):
     - Each part should be self-contained but connect smoothly to others
     - Include approximately {tokens_per_split} tokens worth of conversation
     - Generate exactly {images_per_point} image prompts for each discussion point
+    - Generate exactly {num_speakers} speaker(s) in the outline
+    - If num_speakers is 1, make it a monologue
 
     Additional image prompt details: '{image_prompt_details}'
 
@@ -42,9 +47,10 @@ def generate_outline_prompt(topic, length):
     """
     return prompt
 
-def generate_outline(prompt, model="gpt-4o-2024-08-06"):
+def generate_outline(prompt, model="gpt-4o"):
     client = get_openai_client()
     length = st.session_state.get("length", 10)
+    num_speakers = st.session_state.get("num_speakers", 2)
     
     completion = client.beta.chat.completions.parse(
         model=model,
@@ -52,14 +58,14 @@ def generate_outline(prompt, model="gpt-4o-2024-08-06"):
             {"role": "system", "content": prompt["system"]},
             {"role": "user", "content": prompt["user"]},
         ],
-        response_format=ConversationOutline
+        response_format=TopicOutline
     )
     outline = completion.choices[0].message.parsed
     outline.length_minutes = length
     return outline
 
 def generate_fake_outline(topic, length):
-    outline = ConversationOutline(
+    outline = TopicOutline(
         context=f"This is a {length}-minute long conversation about {topic}.", 
         sections=[
             Section(
