@@ -52,7 +52,6 @@ def render_conversation_upload_section():
     if uploaded_file is not None:
         try:
             content = json.load(uploaded_file)
-            # Bestem type basert på antall speakers i outline
             if content.get("outline", {}).get("num_speakers", 2) == 1:
                 model_type = Monologue
             else:

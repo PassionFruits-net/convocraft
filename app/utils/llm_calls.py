@@ -21,10 +21,13 @@ def fetch_conversation_responses(context, prompts, outline: TopicOutline, model=
     client = get_openai_client()
     conversation_pieces = []
     previous_summary = None
+    previous_entities = []
+    
     segment_info = st.session_state.get("conversation_splits", {
         "total_splits": 1,
         "current_split": 0,
-        "num_speakers": outline.num_speakers
+        "num_speakers": outline.num_speakers,
+        "previous_entities": previous_entities
     })
 
     outline_dict = outline.model_dump()
@@ -51,9 +54,12 @@ def fetch_conversation_responses(context, prompts, outline: TopicOutline, model=
                 response_format=response_format
             )
             response = completion.choices[0].message.parsed
-            # Konverter til endelig format med outline
             full_response = final_format(outline=outline_dict, utterances=response.utterances)
             conversation_pieces.append(full_response)
+            
+            new_entities = [entity for utterance in response.utterances for entity in utterance.entities]
+            previous_entities.extend(new_entities)
+            segment_info["previous_entities"] = previous_entities
             
             previous_summary = generate_segment_summary(full_response)
             

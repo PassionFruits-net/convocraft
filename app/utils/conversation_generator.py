@@ -1,5 +1,6 @@
 from utils.data_models import Conversation, Monologue, TopicOutline
 from utils.llm_calls import get_openai_client
+import streamlit as st
 
 def merge_conversation(conversation_pieces: list, outline: TopicOutline) -> Conversation | Monologue:
     outline_dict = outline.model_dump()
@@ -21,6 +22,8 @@ def create_segment_prompt(context, prompt, segment_info, previous_summary=None):
     segment_num = segment_info["current_split"] + 1
     total_segments = segment_info["total_splits"]
     num_speakers = segment_info.get("num_speakers", 2)
+    previous_entities = segment_info.get("previous_entities", [])
+    document_context = st.session_state.get("document_context", None)
     
     base_prompt = f"""
     SEGMENT {segment_num} OF {total_segments}
@@ -31,10 +34,21 @@ def create_segment_prompt(context, prompt, segment_info, previous_summary=None):
     SECTION CONTENT:
     {prompt}
 
+    {"DOCUMENT CONTEXT:" + document_context if document_context else ""}
+
+    PREVIOUSLY MENTIONED ENTITIES:
+    {', '.join(previous_entities) if previous_entities else 'None'}
+
     INSTRUCTIONS:
     - This is segment {segment_num} of {total_segments}
     - This is a {'monologue' if num_speakers == 1 else 'conversation'}
-    - Do NOT include greetings or introductions unless this is segment 1
+    - Only include greetings and introductions if this is segment 1
+    - Base all responses strictly on the provided document context if available
+    - Use specific quotes and references from the document when relevant
+    - For previously mentioned entities:
+        * Avoid reintroducing them as new concepts
+        * Only reference them with phrases like "as mentioned earlier", "as we discussed", etc.
+        * Focus on new aspects or connections rather than repeating basic information
     - Maintain natural flow
     - Ensure smooth transition from previous segment
     - {'Use only one speaker voice throughout' if num_speakers == 1 else 'Maintain natural dialogue between speakers'}

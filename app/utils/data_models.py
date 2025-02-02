@@ -14,38 +14,23 @@ class Speaker(BaseModel):
     gender: Gender = Field(..., description="The gender of the speaker (male or female).")
 
 class DiscussionPoint(BaseModel):
-    text: str = Field(..., description="The main point of the discussion.")
-    image_prompts: Optional[list[str]] = Field(..., description="A list of prompts to generate images based on the discussion point.")
+    text: str = Field(..., description="The discussion point text")
+    entities: list[str] = Field(..., description="List of entities (concepts, characters, etc.) introduced in this discussion point")
+    image_prompts: list[str] = Field(..., description="List of image prompts for this discussion point")
 
 
 class Section(BaseModel):
-    focus: str = Field(..., description="The main point of this section.")
-    discussion_points: list[DiscussionPoint] = Field(
-        ..., 
-        description="A list of key points to be discussed in this section."
-    )
+    focus: str = Field(..., description="The main focus of this section")
+    discussion_points: list[DiscussionPoint] = Field(..., description="List of discussion points for this section")
+    entities: list[str] = Field(..., description="List of all entities mentioned in this section")
 
 class TopicOutline(BaseModel):
-    context: str = Field(
-        ...,
-        description="""A brief introduction to the topic and its importance."""
-    )
-    sections: list[Section] = Field(
-        ...,
-        description="A list of sections outlining the conversation/monologue, each containing a focus and key discussion points."
-    )
-    speakers: list[Speaker] = Field(
-        ...,
-        description="""A list of speaker(s) involved in the conversation/monologue, each with a name, gender and role. There may be only one speaker."""
-    )
-    length_minutes: int = Field(
-        ...,
-        description="The target length of the conversation/monologue in minutes"
-    )
-    num_speakers: int = Field(
-        ...,
-        description="Number of speakers in the conversation/monologue (1 for monologue or 2 for conversation)"
-    )
+    context: str = Field(..., description="The context for the conversation")
+    sections: list[Section] = Field(..., description="List of sections in the outline")
+    speakers: list[Speaker] = Field(..., description="List of speakers in the conversation")
+    length_minutes: int = Field(description="Length of the conversation in minutes")
+    num_speakers: int = Field(description="Number of speakers in the conversation")
+    previous_entities: list[str] = Field(description="List of entities mentioned in previous sections")
 
 class MonologueUtterance(BaseModel):
     speaker: Speaker

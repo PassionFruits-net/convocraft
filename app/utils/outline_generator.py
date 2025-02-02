@@ -3,11 +3,10 @@ from utils.data_models import TopicOutline, Section, Speaker
 from utils.openai_utils import get_openai_client
 from utils.token_estimator import TokenEstimator
 
-def generate_outline_prompt(topic, length, num_speakers):
+def generate_outline_prompt(topic, length, num_speakers, document_context=None):
     image_prompt_details = st.session_state.get("image_prompt_details", "")
     images_per_point = st.session_state.get("images_per_point", 5)
-    num_speakers = st.session_state.get("num_speakers", 2)
-
+    
     estimator = TokenEstimator()
     num_splits = estimator.estimate_conversation_splits(length)
     tokens_per_split = estimator.get_tokens_per_split(length, num_splits)
@@ -20,31 +19,42 @@ def generate_outline_prompt(topic, length, num_speakers):
     }
 
     prompt = dict()
-    prompt["system"] = "You are a conversation planner."
-    prompt["user"] = f"""
-    This is part 1 of {num_splits} for a {length}-minute conversation.
-    Target token count for this part: {tokens_per_split}
+    prompt["system"] = """You are a content creator. Your task is to create a detailed outline 
+    for a conversation or monologue that accurately reflects the content and context of the provided document.
+    Focus on the main themes and key points from the document context."""
+    
+    base_prompt = f"""
+    Create a {length}-minute conversation/monologue outline.
     Number of speakers: {num_speakers}
-
     Topic: {topic}
+    """
 
-    Instructions:
-    - Create an outline that can be naturally continued in subsequent parts
-    - Each part should be self-contained but connect smoothly to others
-    - Include approximately {tokens_per_split} tokens worth of conversation
-    - Generate exactly {images_per_point} image prompts for each discussion point
-    - Generate exactly {num_speakers} speaker(s) in the outline
+    if document_context:
+        base_prompt += f"""
+        DOCUMENT CONTEXT:
+        {document_context}
+
+        Instructions:
+        - Extract and focus on the main themes and key concepts from the document
+        - Organize the discussion points around these core themes
+        - Include 2-3 specific references or quotes from the document
+        - Ensure discussion points build on each other logically
+        """
+    
+    prompt["user"] = base_prompt + f"""
+    Additional Requirements:
+    - Create {num_splits} main sections
+    - Include 2-3 focused discussion points per section
+    - Generate {images_per_point} image prompts per discussion point
     - If num_speakers is 1, make it a monologue
 
-    Additional image prompt details: '{image_prompt_details}'
-
-    General instructions for image_prompts:
-    - Descriptive scene, elements, lighting, mood but concise
-    - Consistent theme/style
-    - No NSFW content
-    - Natural elements only, no humans or maps
-    - Dall-E optimized
+    Image prompt style: '{image_prompt_details}'
+    - Keep image prompts concise but descriptive
+    - Focus on mood, lighting, and key visual elements
+    - Avoid human figures and maps
+    - Must be suitable for Dall-E
     """
+
     return prompt
 
 def generate_outline(prompt, model="gpt-4o"):

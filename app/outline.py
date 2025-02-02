@@ -41,11 +41,19 @@ def generate_outline_button_callback():
     topic = st.session_state.get("topic", "")
     length = st.session_state.get("length", 10)
     num_speakers = st.session_state.get("num_speakers", 2)
+    document_context = st.session_state.get("document_context", None)
+    
     with st.spinner("Generating outline..."):
         if os.environ.get("DEBUG_MODE", "False").lower() == "true":
             outline = generate_fake_outline(topic, length, num_speakers)
         else:
-            outline_prompt = generate_outline_prompt(topic, length, num_speakers)
+            print("DOC CONTEXT", document_context)
+            outline_prompt = generate_outline_prompt(
+                topic=topic, 
+                length=length, 
+                num_speakers=num_speakers,
+                document_context=document_context
+            )
             outline = generate_outline(outline_prompt)
         st.session_state["outline"] = outline
 
@@ -76,6 +84,24 @@ def render_outline_update_section():
 def render_outline_section():
     with st.sidebar.expander("📝 Outline Inputs", expanded=False):
         render_outline_upload_section()
+        
+        # Sett document_context fra document_chunks hvis tilgjengelig
+        if "document_chunks" in st.session_state:
+            # Begrens kontekststørrelsen ved å ta de første N chunks eller tegn
+            max_chunks = 3  # Juster dette basert på testing
+            selected_chunks = st.session_state["document_chunks"][:max_chunks]
+            document_context = "\n".join(selected_chunks)
+            
+            # Begrens total lengde hvis nødvendig
+            max_chars = 6000  # Omtrent 1500 tokens
+            if len(document_context) > max_chars:
+                document_context = document_context[:max_chars] + "..."
+            
+            st.session_state["document_context"] = document_context
+            
+            if len(st.session_state["document_chunks"]) > max_chunks:
+                st.info(f"Using first {max_chunks} sections of the document for context. The full document will be used for detailed conversation generation.")
+        
         st.text_area(
             "🗣️ Conversation Topic", 
             placeholder="Describe the topic for conversation... (it can be a single word as well as an elaborate scenario)",
