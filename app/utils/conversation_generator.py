@@ -2,7 +2,61 @@ from utils.data_models import Conversation, Monologue, TopicOutline
 from utils.llm_calls import get_openai_client
 import streamlit as st
 
+
+from collections import Counter
+
+def deduplicate_utterances(utterances, n=3):
+    """
+    Removes duplicate utterances by checking for repeated n-grams (default: trigrams).
+    """
+    seen = set()
+    filtered_utterances = []
+
+    for utterance in utterances:
+        # Extract the text content (modify this if `text` is stored under another attribute)
+        text = getattr(utterance, "text", None)  # Fallback if `text` isn't an attribute
+
+        if not text:  # Skip empty or improperly formatted utterances
+            filtered_utterances.append(utterance)
+            continue
+
+        words = text.split()
+        n_grams = {" ".join(words[i:i + n]) for i in range(len(words) - n + 1)}
+
+        if any(ng in seen for ng in n_grams):
+            continue  # Skip repeated content
+
+        seen.update(n_grams)
+        filtered_utterances.append(utterance)
+
+    return filtered_utterances
+
+
 def merge_conversation(conversation_pieces: list, outline: TopicOutline) -> Conversation | Monologue:
+    """
+    Merges conversation segments while avoiding redundant utterances.
+    """
+    outline_dict = outline.model_dump()
+
+    if outline.num_speakers == 1:
+        full_monologue = Monologue(outline=outline_dict, utterances=[])
+        for piece in conversation_pieces:
+            full_monologue.utterances.extend(piece.utterances)
+
+        # Apply deduplication
+        full_monologue.utterances = deduplicate_utterances(full_monologue.utterances)
+        return full_monologue
+
+    else:
+        full_conversation = Conversation(outline=outline_dict, utterances=[])
+        for piece in conversation_pieces:
+            full_conversation.utterances.extend(piece.utterances)
+
+        # Apply deduplication
+        full_conversation.utterances = deduplicate_utterances(full_conversation.utterances)
+        return full_conversation
+
+def merge_conversation_old(conversation_pieces: list, outline: TopicOutline) -> Conversation | Monologue:
     outline_dict = outline.model_dump()
     if outline.num_speakers == 1:
         full_monologue = Monologue(outline=outline_dict, utterances=[])
@@ -24,45 +78,53 @@ def create_segment_prompt(context, prompt, segment_info, previous_summary=None):
     num_speakers = segment_info.get("num_speakers", 2)
     previous_entities = segment_info.get("previous_entities", [])
     document_context = st.session_state.get("document_context", None)
-    
-    base_prompt = f"""
-    SEGMENT {segment_num} OF {total_segments}
 
-    CONTEXT:
+    base_prompt = f"""
+    🔹 SEGMENT {segment_num} OF {total_segments}
+
+    📌 CONTEXT:
     {context}
 
-    SECTION CONTENT:
+    📖 SECTION CONTENT:
     {prompt}
+    """
 
-    {"DOCUMENT CONTEXT:" + document_context if document_context else ""}
+    if document_context:
+        base_prompt += f"\n📄 DOCUMENT CONTEXT:\n{document_context}"
 
-    PREVIOUSLY MENTIONED ENTITIES:
+    base_prompt += f"""
+    🔍 PREVIOUSLY MENTIONED ENTITIES:
     {', '.join(previous_entities) if previous_entities else 'None'}
 
-    INSTRUCTIONS:
-    - This is segment {segment_num} of {total_segments}
-    - This is a {'monologue' if num_speakers == 1 else 'conversation'}
-    - Only include greetings and introductions if this is segment 1
-    - Base all responses strictly on the provided document context if available
-    - Use specific quotes and references from the document when relevant
-    - For previously mentioned entities:
-        * Avoid reintroducing them as new concepts
-        * Only reference them with phrases like "as mentioned earlier", "as we discussed", etc.
-        * Focus on new aspects or connections rather than repeating basic information
-    - Maintain natural flow
-    - Ensure smooth transition from previous segment
-    - {'Use only one speaker voice throughout' if num_speakers == 1 else 'Maintain natural dialogue between speakers'}
+    ✅ INSTRUCTIONS:
+    - 🔢 This is segment {segment_num} of {total_segments}
+    - 🗣️ This is a {'monologue' if num_speakers == 1 else 'conversation'}
+    - 👋 Only include greetings and introductions if this is segment 1
+    - 📜 Base responses strictly on the document context if available
+    - 🔗 Use specific quotes and references from the document where relevant
+    - 🔄 For previously mentioned entities:
+        * 🛑 **Do NOT reintroduce them as new concepts**
+        * 🔄 Reference them with phrases like *"as mentioned earlier"*, *"as we discussed previously"*, etc.
+        * 🆕 **Introduce new aspects, relationships, or implications rather than repeating details**
+    - 🎭 Maintain a natural conversational flow
+    - 🔀 Ensure a **smooth transition** from the previous segment
+    - {'🗣️ Maintain a consistent speaker voice' if num_speakers == 1 else '💬 Keep the dialogue natural and dynamic'}
+
+    🚀 ENHANCEMENT INSTRUCTIONS:
+    - 🤔 Think critically: What *new* insights, reactions, or developments can be added?
+    - 🔥 Avoid predictable responses; introduce **unexpected perspectives**.
+    - 🎨 If discussing abstract ideas, provide vivid examples, analogies, or stories.
     """
-    
+
     if previous_summary and segment_num > 1:
         base_prompt += f"""
         
-        PREVIOUS SEGMENT SUMMARY:
+        🔄 PREVIOUS SEGMENT SUMMARY:
         {previous_summary}
-        
-        Continue naturally from this point.
+
+        ➡️ Continue naturally from this point. Focus on advancing the discussion **rather than repeating past ideas**.
         """
-    
+
     return base_prompt
 
 def generate_segment_summary(conversation_piece):

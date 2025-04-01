@@ -54,6 +54,7 @@ def generate_outline_button_callback():
                 num_speakers=num_speakers,
                 document_context=document_context
             )
+            print("OUTLINE PROMPT", outline_prompt)
             outline = generate_outline(outline_prompt)
         st.session_state["outline"] = outline
 
@@ -67,6 +68,28 @@ def update_outline_button_callback():
             )
             updated_outline = generate_outline(change_prompt)
             st.session_state["outline"] = updated_outline
+
+def render_outline_upload_section():
+    uploaded_outline_file = st.file_uploader("Upload Outline JSON", type="json", key="upload_outline")
+    current = st.session_state.get("current_uploaded_file", None)
+
+    if uploaded_outline_file != current:
+        st.session_state["current_uploaded_file"] = uploaded_outline_file        
+        try:
+            uploaded_outline = json.load(uploaded_outline_file)
+            validated_outline = TypeAdapter(TopicOutline).validate_python(uploaded_outline)
+
+            # ✅ Set the outline
+            st.session_state["outline"] = validated_outline
+
+            # ✅ Ensure document_context is set separately
+            if hasattr(validated_outline, "document_context"):
+                st.session_state["document_context"] = validated_outline.document_context
+            else:
+                st.session_state["document_context"] = None  # Set to None explicitly if missing
+
+        except Exception as e:
+            st.error(f"Failed to upload outline: {e}")
 
 def render_outline_update_section():
     st.header("🔍 Edit Outline")
@@ -85,15 +108,12 @@ def render_outline_section():
     with st.sidebar.expander("📝 Outline Inputs", expanded=False):
         render_outline_upload_section()
         
-        # Sett document_context fra document_chunks hvis tilgjengelig
         if "document_chunks" in st.session_state:
-            # Begrens kontekststørrelsen ved å ta de første N chunks eller tegn
-            max_chunks = 3  # Juster dette basert på testing
+            max_chunks = 3
             selected_chunks = st.session_state["document_chunks"][:max_chunks]
             document_context = "\n".join(selected_chunks)
             
-            # Begrens total lengde hvis nødvendig
-            max_chars = 6000  # Omtrent 1500 tokens
+            max_chars = 6000  # roughly 1500 tokens
             if len(document_context) > max_chars:
                 document_context = document_context[:max_chars] + "..."
             

@@ -114,6 +114,7 @@ pyasn1_modules==0.4.1
 pydantic==2.10.2
 pydantic_core==2.27.1
 pydeck==0.9.1
+pydrive2==1.21.3
 pydub==0.25.1
 Pygments==2.18.0
 PyJWT==2.10.1

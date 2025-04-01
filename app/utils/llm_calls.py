@@ -50,6 +50,7 @@ def fetch_conversation_responses(context, prompts, outline: TopicOutline, model=
                     {"role": "system", "content": segment_prompt}
                 ],
                 temperature=0.7,
+                top_p=0.7,
                 max_tokens=4096,
                 response_format=response_format
             )
