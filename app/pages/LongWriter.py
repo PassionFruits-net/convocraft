@@ -172,6 +172,16 @@ if authenticated:
                 st.session_state.long_story.image_paths = image_paths
                 persist()
 
+    if st.session_state.long_story.image_prompts:
+        st.markdown("### 🖼 Image prompts")
+        for i, image_prompt in enumerate(st.session_state.long_story.image_prompts, 1):
+            st.markdown(f"**{i}.** {image_prompt}")
+
+    if st.session_state.long_story.image_paths:
+        st.markdown("### 🖼 Images")
+        for i, image_path in enumerate(st.session_state.long_story.image_paths, 1):
+            st.markdown(f"**{i}.** {image_path}")
+            
     # Voice selection
     st.markdown("### 🎤 Generate Audio")
     voice_options = ["alloy", "ash", "coral", "echo", "fable", "onyx", "nova", "sage", "shimmer"]
