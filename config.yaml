@@ -73,3 +73,6 @@ credentials:
 pre-authorized:
   emails:
   - saghar@passionfruits.net
+
+persistence:
+  base: "file:./data"
