@@ -5,6 +5,7 @@ import requests
 from pydub import AudioSegment
 from dotenv import load_dotenv
 from typing import List
+from . import persistence
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -55,6 +56,8 @@ def generate_tts_audio(text: str, voice: str = "nova") -> str:
 
     # Merge audio
     final_audio = sum(audio_segments[1:], audio_segments[0]) if len(audio_segments) > 1 else audio_segments[0]
-    final_path = os.path.join(tempfile.gettempdir(), "longwriter_audio.mp3")
-    final_audio.export(final_path, format="mp3")
-    return final_path
+
+    with persistence.write_persisted_file(".mp3", "wb") as f:
+        final_audio.export(f, format="mp3")
+
+    return f.url
