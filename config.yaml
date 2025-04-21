@@ -75,4 +75,4 @@ pre-authorized:
   - saghar@passionfruits.net
 
 persistence:
-  base: "az://convocraft"
+  base: "az://stories"
