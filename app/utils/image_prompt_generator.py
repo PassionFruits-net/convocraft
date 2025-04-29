@@ -1,8 +1,9 @@
 import os
-import openai
+from openai import OpenAI
 from typing import List
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Create a client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def generate_image_prompts_from_steps(theme: str, plan_steps: List[str]) -> List[str]:
     """
@@ -22,14 +23,14 @@ Style and atmosphere should match the theme "{theme}".
 Return the prompts as a numbered list.
 """
 
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.9,
         max_tokens=1000
     )
 
-    raw_text = response["choices"][0]["message"]["content"]
+    raw_text = response.choices[0].message.content
     
     # Extract just the lines starting with numbers (e.g. 1. ...)
     image_prompts = [line.partition(".")[2].strip() for line in raw_text.splitlines() if line.strip().startswith(tuple("123456789"))]

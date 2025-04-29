@@ -9,6 +9,7 @@ import contextlib
 import os
 import functools
 import shutil
+import tempfile
 
 if "config" not in st.session_state:
     with open('config.yaml', 'r', encoding='utf-8') as file:
@@ -45,32 +46,29 @@ class PersistedModel(pydantic.BaseModel):
         return self.model_dump()["__jsonclass__"][1]
 
 @contextlib.contextmanager
-def write_persisted_file(suffix = "", mode = "wb"):
-    """Usage:
+def write_persisted_file(suffix="", mode="wb"):
+    """
+    Usage:
 
     with write_persisted_file(".png", "wb") as f:
         f.write(pngimagedata)
-    # Note: url is only available after the with statement is closed! 
-    persisted_at = f.url
-
-    It is also possible to access f.name inside the with statement to get a
-    local-filesystem-path that can be given to an external process.    
+    # After the with-block, persisted_at = f.url
     """
     assert "w" in mode
     temp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
     try:
         with open(temp.name, mode) as ftemp:
-            ftemp.name = temp.name
-            yield ftemp
+            yield ftemp  # Just yield ftemp, no need to assign ftemp.name
         with open(temp.name, "rb") as f:
             hsh = hashlib.sha256()
             for block in iter(functools.partial(f.read, 1024), b''):
-                hsh.update(chunk)
+                hsh.update(block)  # <-- Also fix typo: you used 'chunk' instead of 'block'!
         content_id = hsh.hexdigest()
-        ftemp.url = "%s/%s%s" % (persistence_base, content_id, suffix)
-        with fsspec.open(ftemp.url, "wb") as fout:
+        ftemp_url = "%s/%s%s" % (persistence_base, content_id, suffix)
+        with fsspec.open(ftemp_url, "wb") as fout:
             with open(temp.name, "rb") as fin:
                 shutil.copyfileobj(fin, fout)
+        ftemp.url = ftemp_url  # <-- Assign URL here AFTER processing
     finally:
         os.remove(temp.name)
 

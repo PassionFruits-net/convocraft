@@ -1,5 +1,5 @@
 import os
-import openai
+from openai import OpenAI
 from typing import List
 from PIL import Image
 from io import BytesIO
@@ -7,7 +7,8 @@ import base64
 import io
 from . import persistence
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Create OpenAI client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def generate_images_from_plan(image_prompts: List[str]) -> List[str]:
     """
@@ -20,14 +21,14 @@ def generate_images_from_plan(image_prompts: List[str]) -> List[str]:
         print(f"🎨 Generating image for: {prompt}")
 
         try:
-            response = openai.Image.create(
+            response = client.images.generate(
                 prompt=prompt,
                 n=1,
-                size="1792x1024",  # DALL·E high-res
+                size="1024x1024",  # DALL·E high-res
                 response_format="b64_json"
             )
 
-            image_data = response["data"][0]["b64_json"]
+            image_data = response.data[0].b64_json  # <-- NEW object access
             image = Image.open(BytesIO(base64.b64decode(image_data)))
 
             with persistence.write_persisted_file(".jpg", "wb") as f:
@@ -38,4 +39,3 @@ def generate_images_from_plan(image_prompts: List[str]) -> List[str]:
             print(f"❌ Error generating image for step {idx}: {e}")
 
     return image_paths
-

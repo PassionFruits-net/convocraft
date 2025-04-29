@@ -190,29 +190,9 @@ if authenticated:
     if st.button("🔊 Generate Audio"):
         with st.spinner("Generating MP3..."):
             try:
-                st.session_state.long_story.audio_path = generate_tts_audio(story, voice=st.session_state.voice)
+                st.session_state.long_story.audio_path = generate_tts_audio(st.session_state.long_story.story, voice=st.session_state.voice)
                 persist()
                 st.success("Audio generated!")
-
-                # drive_link = upload_to_drive(
-                #     content=open(audio_path, "rb").read(),
-                #     filename="longwriter_audio.mp3"
-                # )
-                # if drive_link == "ERROR":
-                #     st.error("❌ Audio upload failed.")
-                # else:
-                #     st.success("📤 Audio Uploaded to Drive!")
-                #     st.markdown(f"[🎧 Listen to Audio]({drive_link})")
-                    
-                # with fsspec.open(st.session_state.long_story.audio_path, "rb") as f:
-                #    audio_bytes = f.read()
-
-                # create_download_button(
-                #     data=audio_bytes,
-                #     filename="longwriter_audio.mp3",
-                #     mime_type="audio/mp3",
-                #     label="🎧 Download Audio"
-                # )
                     
             except Exception as e:
                 st.error(f"❌ Error generating audio: {e}")
