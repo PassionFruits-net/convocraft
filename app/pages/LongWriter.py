@@ -2,7 +2,6 @@ import streamlit as st
 st.set_page_config(page_title="LongWriter", layout="centered")
 import base64
 from utils.longwriter_interface import generate_longwriter_output
-from utils.drive_utils import upload_to_drive
 from utils.read_wrapper import generate_tts_audio
 from typing import Union
 from utils.image_generator import generate_images_from_plan
@@ -11,16 +10,11 @@ from utils.video_builder import (
     combine_clips_and_audio,
     finalize_video_with_intro_outro
 )
-import tempfile
-import os
-from utils.longwriter_interface import save_generation_to_jsonl
+from utils import persistence
 import json
-from datetime import datetime
-import zipfile
 from utils.image_prompt_generator import generate_image_prompts_from_steps
 from auth import handle_authentication
 from utils.persistence import PersistedModel
-import fsspec
 import typing
 import pydantic
 
@@ -198,50 +192,44 @@ if authenticated:
                 st.error(f"❌ Error generating audio: {e}")
 
 
-    if st.session_state.get("audio_path") and st.session_state.get("image_paths"):
-        st.markdown("### 🎬 Combine Audio + Images into Video")
+    # if st.session_state.get("audio_path") and st.session_state.get("image_paths"):
+    st.markdown("### 🎬 Combine Audio + Images into Video")
 
-        # Optional uploads
-        uploaded_intro = st.file_uploader("Upload Intro Clip", type=["mp4", "mov", "qt"])
-        uploaded_outro = st.file_uploader("Upload Outro Clip", type=["mp4", "mov", "qt"])
-        uploaded_bg_music = st.file_uploader("Upload Background Music", type=["mp3"])
+    # Optional uploads
+    uploaded_intro = st.file_uploader("Upload Intro Clip", type=["mp4", "mov", "qt"])
+    uploaded_outro = st.file_uploader("Upload Outro Clip", type=["mp4", "mov", "qt"])
+    uploaded_bg_music = st.file_uploader("Upload Background Music", type=["mp3"])
 
-        if st.button("🎬 Generate Final Video"):
-            with st.spinner("Generating final video..."):
-                try:
+    if st.button("🎬 Generate Final Video"):
+        with st.spinner("Generating final video..."):
+            # try:
+                if uploaded_intro:
                     st.session_state.long_story.intro_path = persistence.persist_file(uploaded_intro, uploaded_intro.name)
-                    st.session_state.long_story.outro_path = persistence.persist_file(uploaded_outro, uploaded_intro.name)
+                    persist()
+                if uploaded_outro:
+                    st.session_state.long_story.outro_path = persistence.persist_file(uploaded_outro, uploaded_outro.name)
+                    persist()
+                if uploaded_bg_music:
                     st.session_state.long_story.bg_music_path = persistence.persist_file(uploaded_bg_music, uploaded_intro.name)
                     persist()
 
-                    st.session_state.long_story.clip_paths = generate_clips_from_images(st.session_state.image_paths)
-                    persist()
-                
-                    st.session_state.long_story.main_video_path = combine_clips_and_audio(
-                        clip_paths = st.session_state.long_story.clip_paths,
-                        audio_path = st.session_state.long_story.audio_path)
-                    persist()
+                print("Intro path: ", st.session_state.long_story.intro_path)
+                st.session_state.long_story.clip_paths = generate_clips_from_images(st.session_state.long_story.image_paths)
+                persist()
+            
+                print("Clip paths: ", st.session_state.long_story.clip_paths)
+                st.session_state.long_story.main_video_path = combine_clips_and_audio(
+                    clip_paths = st.session_state.long_story.clip_paths,
+                    audio_path = st.session_state.long_story.audio_path)
+                persist()
 
-                    st.session_state.long_story.final_video_path = finalize_video_with_intro_outro(
-                        main_video_path=st.session_state.long_story.main_video_path,
-                        intro_path=st.session_state.long_story.intro_path,
-                        outro_path=st.session_state.long_story.outro_path,
-                        bg_music_path=st.session_state.long_story.bg_music_path)
-                    persist()
+                print("Main video path: ", st.session_state.long_story.main_video_path)
+                st.session_state.long_story.final_video_path = finalize_video_with_intro_outro(
+                    main_video_path=st.session_state.long_story.main_video_path,
+                    intro_path=st.session_state.long_story.intro_path,
+                    outro_path=st.session_state.long_story.outro_path,
+                    bg_music_path=st.session_state.long_story.bg_music_path)
+                persist()
 
-                    # # Upload and download
-                    # with open(final_video_path, "rb") as f:
-                    #     video_bytes = f.read()
-
-                    # drive_link = upload_to_drive(video_bytes, filename="longwriter_final_video.mp4")
-
-                    # create_download_button(
-                    #     data=video_bytes,
-                    #     filename="longwriter_final_video.mp4",
-                    #     mime_type="video/mp4",
-                    #     label="📽️ Download Final Video"
-                    # )
-                    # st.markdown(f"[🎬 View Video on Drive]({drive_link})")
-
-                except Exception as e:
-                    st.error(f"❌ Final video generation failed: {e}")
+            # except Exception as e:
+            #     st.error(f"❌ Error generating video: {e}")

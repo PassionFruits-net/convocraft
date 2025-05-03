@@ -10,6 +10,7 @@ import os
 import functools
 import shutil
 import tempfile
+from pydantic import AnyUrl
 
 if "config" not in st.session_state:
     with open('config.yaml', 'r', encoding='utf-8') as file:
@@ -18,6 +19,14 @@ if "config" not in st.session_state:
 persistence_base = st.session_state.config.get(
     "persistence", {}).get("base", "file:.")
 
+def to_json_safe(obj):
+    if isinstance(obj, AnyUrl):
+        return str(obj)
+    elif isinstance(obj, list):
+        return [to_json_safe(i) for i in obj]
+    elif isinstance(obj, dict):
+        return {k: to_json_safe(v) for k, v in obj.items()}
+    return obj
 class PersistedModel(pydantic.BaseModel):
     persisted_at: typing.Optional[str] = None
 
@@ -29,18 +38,33 @@ class PersistedModel(pydantic.BaseModel):
                 data["persisted_at"] = persisted_at
         super().__init__(**data)
 
+
     @pydantic.model_serializer(mode='wrap')
     def ser_model(self, handler: pydantic.SerializerFunctionWrapHandler, info: pydantic.SerializationInfo) -> dict[str, typing.Any]:
-        value = handler(self)
-        value.pop("persisted_at")
-        value_json = json.dumps(value, sort_keys=True).encode("utf-8")
-        model_id = hashlib.sha256(value_json).hexdigest()
+        try:
+            raw_value = handler(self)
+            print("RAW VALUE BEFORE JSON SANITIZATION:\n%s", raw_value)
 
-        if not self.persisted_at or self.persisted_at.split("/")[-1].split(".json")[0] != model_id:
-            self.persisted_at = "%s/%s.json" % (persistence_base, model_id)
-            with fsspec.open(self.persisted_at, "wb") as f:
-                f.write(value_json)
-        return {"__jsonclass__": ["persisted_at", self.persisted_at]}
+            raw_value.pop("persisted_at", None)
+
+            json_safe_value = to_json_safe(raw_value)
+            print("JSON-SAFE VALUE AFTER CONVERSION:\n%s", json_safe_value)
+
+            value_json = json.dumps(json_safe_value, sort_keys=True).encode("utf-8")
+            model_id = hashlib.sha256(value_json).hexdigest()
+
+            if not self.persisted_at or self.persisted_at.split("/")[-1].split(".json")[0] != model_id:
+                self.persisted_at = f"{persistence_base}/{model_id}.json"
+                with fsspec.open(self.persisted_at, "wb") as f:
+                    f.write(value_json)
+
+            return {"__jsonclass__": ["persisted_at", self.persisted_at]}
+        
+        except TypeError as e:
+            print("JSON serialization failed.")
+            print("Original data (raw_value): %s", raw_value)
+            print("Sanitized data (json_safe_value): %s", json_safe_value)
+            raise TypeError(f"Serialization failed: {e} | Object: {raw_value}") from e
 
     def persist(self):
         return self.model_dump()["__jsonclass__"][1]
@@ -72,10 +96,19 @@ def write_persisted_file(suffix="", mode="wb"):
     finally:
         os.remove(temp.name)
 
+# def persist_file(local_file, name):
+#     with write_persisted_file(suffix = "." + name.rsplit(".", 1)[1]) as outf:
+#         shutil.copy(local_file, outf)
+#     return outf.url
+
 def persist_file(local_file, name):
-    with write_persisted_file(suffix = "." + name.rsplit(".", 1)[1]) as outf:
-        shutil.copy(local_file, outf)
-    return outf.url
+    suffix = "." + name.rsplit(".", 1)[1]
+    with write_persisted_file(suffix=suffix, mode="wb") as f:
+        # ❌ Don't pass `f` to shutil.copy
+        # ✅ Instead, write the contents directly:
+        with open(local_file, "rb") as src:
+            shutil.copyfileobj(src, f)
+    return f.url
 
     
 if __name__ == "__main__":
