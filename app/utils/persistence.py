@@ -11,6 +11,7 @@ import functools
 import shutil
 import tempfile
 from pydantic import AnyUrl
+import streamlit as st
 
 if "config" not in st.session_state:
     with open('config.yaml', 'r', encoding='utf-8') as file:
@@ -53,8 +54,9 @@ class PersistedModel(pydantic.BaseModel):
             value_json = json.dumps(json_safe_value, sort_keys=True).encode("utf-8")
             model_id = hashlib.sha256(value_json).hexdigest()
 
-            if not self.persisted_at or self.persisted_at.split("/")[-1].split(".json")[0] != model_id:
-                self.persisted_at = f"{persistence_base}/{model_id}.json"
+            if not self.persisted_at or self.persisted_at.split("/")[-1].split("_")[-1].split(".json")[0] != model_id:    
+                username = st.session_state.get("username", "anonymous")
+                self.persisted_at = f"{persistence_base}/{username}_{model_id}.json"
                 with fsspec.open(self.persisted_at, "wb") as f:
                     f.write(value_json)
 
