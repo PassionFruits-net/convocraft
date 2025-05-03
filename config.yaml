@@ -10,7 +10,7 @@ credentials:
       first_name: Egil
       last_name: Moller
       logged_in: false
-      password: $2b$12$qpChv0fZjes6Io/1zOSfQ..v9JvZjv3Ihoan6cM/3NlBPGjB4PEeO
+      password: $2b$12$utGIWMfikGBDUe3P.qe5wezpkG0VlzqZ.HXsmCxrgf1dHqqscYelW
       roles:
       - admin
       - editor
@@ -21,7 +21,7 @@ credentials:
       first_name: Espen
       last_name: null
       logged_in: false
-      password: $2b$12$UUKsQ7klWFoVedZMe4ExseZ0NPtbAGXbt7NzC8YGZU57OJESZPiXy
+      password: $2b$12$t/r8u3h0N42yemzeez5oE.MK8P8Q0yMk9bYTvf1.vHz.hBMAQr6RK
       roles:
       - admin
       - editor
@@ -32,7 +32,7 @@ credentials:
       first_name: Geir
       last_name: Isene
       logged_in: false
-      password: $2b$12$1xU4mnzhEysv548lPFY9YO4J9X0WgBFzt7UEzO7jH.L8kFJJbC.di
+      password: $2b$12$UzwX.CLXB6n40Xc4/.6jFu3jQGEV4OIFEdKR1jMc2lz.zK1n0ag.S
       roles:
       - admin
       - editor
@@ -43,7 +43,7 @@ credentials:
       first_name: Niklas
       last_name: Isene
       logged_in: false
-      password: $2b$12$bnZUZSOCnDFGYmQiKrY7vO9/lPLK.l8nZmpL4spueOcbXZQZN6//W
+      password: $2b$12$gRG5l5jXf/L7Xlg9VJRQauc3nx012h7IZ899fgmj1MXWf5SczTB5e
       roles:
       - admin
       - editor
@@ -54,7 +54,7 @@ credentials:
       first_name: Saghar
       last_name: Asadi
       logged_in: true
-      password: $2b$12$8EnnpmjZrSripo9g.bodweAebj2mRN8Axza.SuWA91JFGQGU.oIYu
+      password: $2b$12$LeHT2tPm2A1D16nQbyiGceIrykz4u3taJzRmRJChaiwnbfTammHtG
       roles:
       - admin
       - editor
@@ -65,7 +65,18 @@ credentials:
       first_name: Siv
       last_name: Bayegan
       logged_in: false
-      password: $2b$12$RSVZZXEuvDA1uNkNnBOueOKnhiZZZ4yUmL6FOEhlQ6N7JdvtXHbES
+      password: $2b$12$aQisqCbi1MYup/.EuHUqjeaXQPqJmDGmdGJm5jxQizK8CcMhmNMK.
+      roles:
+      - admin
+      - editor
+      - viewer
+    viktor:
+      email: viktor@passionfruits.net
+      failed_login_attempts: 0
+      first_name: Viktor
+      last_name: null
+      logged_in: false
+      password: $2b$12$bFRe5xWIbcerihkVUz4QOuQUL8kYw6GJ0Nsn/nWrodxmPMUNFDpme
       roles:
       - admin
       - editor
@@ -73,6 +84,5 @@ credentials:
 pre-authorized:
   emails:
   - saghar@passionfruits.net
-
 persistence:
-  base: "az://stories"
+  base: az://stories
