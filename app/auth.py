@@ -4,6 +4,7 @@ import streamlit as st
 from dotenv import load_dotenv
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
+from datetime import datetime
 
 def handle_authentication():
     with open('config.yaml', 'r', encoding='utf-8') as file:
@@ -23,6 +24,8 @@ def handle_authentication():
         st.error(f"Authentication error: {e}")
 
     if st.session_state["authentication_status"]:
+        session_id = f'{st.session_state["username"]}/{datetime.now().strftime("%Y%m%d%H")}'
+        st.session_state["user_sessionid"] = session_id
         authenticator.logout(location="sidebar")
         st.write(f"Welcome *{st.session_state['name']}*!")
         load_dotenv()

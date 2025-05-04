@@ -44,28 +44,20 @@ class PersistedModel(pydantic.BaseModel):
     def ser_model(self, handler: pydantic.SerializerFunctionWrapHandler, info: pydantic.SerializationInfo) -> dict[str, typing.Any]:
         try:
             raw_value = handler(self)
-            print("RAW VALUE BEFORE JSON SANITIZATION:\n%s", raw_value)
-
             raw_value.pop("persisted_at", None)
-
             json_safe_value = to_json_safe(raw_value)
-            print("JSON-SAFE VALUE AFTER CONVERSION:\n%s", json_safe_value)
-
             value_json = json.dumps(json_safe_value, sort_keys=True).encode("utf-8")
             model_id = hashlib.sha256(value_json).hexdigest()
 
-            if not self.persisted_at or self.persisted_at.split("/")[-1].split("_")[-1].split(".json")[0] != model_id:    
-                username = st.session_state.get("username", "anonymous")
-                self.persisted_at = f"{persistence_base}/{username}_{model_id}.json"
+            if not self.persisted_at or self.persisted_at.split("/")[-1].split(".json")[0] != model_id:    
+                persistence_base_session = f"{persistence_base}/{st.session_state.get('user_sessionid', 'anonymous/0000')}"
+                self.persisted_at = f"{persistence_base_session}/{model_id}.json"
                 with fsspec.open(self.persisted_at, "wb") as f:
                     f.write(value_json)
 
             return {"__jsonclass__": ["persisted_at", self.persisted_at]}
         
         except TypeError as e:
-            print("JSON serialization failed.")
-            print("Original data (raw_value): %s", raw_value)
-            print("Sanitized data (json_safe_value): %s", json_safe_value)
             raise TypeError(f"Serialization failed: {e} | Object: {raw_value}") from e
 
     def persist(self):
@@ -90,6 +82,7 @@ def write_persisted_file(suffix="", mode="wb"):
             for block in iter(functools.partial(f.read, 1024), b''):
                 hsh.update(block)  # <-- Also fix typo: you used 'chunk' instead of 'block'!
         content_id = hsh.hexdigest()
+        persistence_base_session = f"{persistence_base}/{st.session_state.get('user_sessionid', 'anonymous/0000')}"
         ftemp_url = "%s/%s%s" % (persistence_base, content_id, suffix)
         with fsspec.open(ftemp_url, "wb") as fout:
             with open(temp.name, "rb") as fin:
