@@ -173,9 +173,9 @@ if authenticated:
 
     if st.session_state.long_story.image_paths:
         st.markdown("### 🖼 Images")
-        for i, image_path in enumerate(st.session_state.long_story.image_paths, 1):
-            st.markdown(f"**{i}.** {image_path}")
-            
+        if st.button("🪟 View gallery"):
+            st.switch_page("pages/ReviewImages.py")
+
     # Voice selection
     st.markdown("### 🎤 Generate Audio")
     voice_options = ["alloy", "ash", "coral", "echo", "fable", "onyx", "nova", "sage", "shimmer"]
