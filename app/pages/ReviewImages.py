@@ -87,7 +87,6 @@ def delete_image(img_index):
 
     fs.delete(full_path)
 
-
 def render_image_grid(image_paths, image_prompts):
     # Ensure state exists
     st.write("### Image Gallery")
@@ -104,7 +103,8 @@ def render_image_grid(image_paths, image_prompts):
             img_desc = image_prompts[img_index]
             with col:
                 st.image(img_path, use_container_width=True)
-                st.caption(img_desc)
+                with st.expander("Show Prompt", expanded=False):
+                    st.caption(img_desc)
                 delete_key = f"delete_{img_index}"
                 if st.button("Delete", key=delete_key):
                     # Delete image and rerun
